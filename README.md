@@ -11,6 +11,7 @@ Filter the image monikers by typing in the search box.
 ![Tool window](art/toolwindow.png)
 
 Right-click any moniker for a list of actions to take.
+
 ![Context Menu](art/context-menu.png)
 
 ## Export...
