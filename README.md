@@ -23,9 +23,10 @@ Hitting the **Enter** key will also show the export dialog.
 ## Copy to clipboard
 This will copy the name of the moniker to the clipboard. You can also use **Ctrl+C** to do the same.
 
-## Futher reading
+## Related resources
 
 * [Image Service and Catalog](https://msdn.microsoft.com/en-US/library/mt628927.aspx)
+* [Image Libray Viewer](https://msdn.microsoft.com/en-us/library/mt629250.aspx)
 
 ## License
 [Apache 2.0](LICENSE)
