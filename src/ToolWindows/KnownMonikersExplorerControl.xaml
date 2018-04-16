@@ -22,7 +22,6 @@
                  Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"
                  />
 
-
         <ListView Name="list" Margin="5,0" Grid.Row="1" Background="Transparent">
             <ListView.Resources>
                 <Style TargetType="GridViewColumnHeader">

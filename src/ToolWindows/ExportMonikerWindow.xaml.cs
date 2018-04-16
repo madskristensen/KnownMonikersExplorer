@@ -28,7 +28,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Icon = GetImage(KnownMonikers.ExportPerformanceReport, 16);
+            Icon = GetImage(KnownMonikers.Export, 16);
             imgMoniker.Source = GetImage(_model.Moniker, 150);
 
             txtSize.Focus();
@@ -88,7 +88,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private static void SaveBitmapToDisk(BitmapSource image, string fileName)
         {
-            var fileParentPath = Path.GetDirectoryName(fileName);
+            string fileParentPath = Path.GetDirectoryName(fileName);
 
             if (Directory.Exists(fileParentPath) == false)
                 Directory.CreateDirectory(fileParentPath);
