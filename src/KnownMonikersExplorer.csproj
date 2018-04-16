@@ -61,6 +61,9 @@
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
+    <Compile Include="ToolWindows\ExportMonikerWindow.xaml.cs">
+      <DependentUpon>ExportMonikerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToolWindows\KnownMonikersExplorerWindow.cs" />
     <Compile Include="ToolWindows\KnownMonikersExplorerControl.xaml.cs">
       <DependentUpon>KnownMonikersExplorerControl.xaml</DependentUpon>
@@ -247,6 +250,10 @@
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.6.46\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ToolWindows\ExportMonikerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ToolWindows\KnownMonikersExplorerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

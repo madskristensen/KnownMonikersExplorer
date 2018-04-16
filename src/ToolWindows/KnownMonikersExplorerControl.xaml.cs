@@ -5,26 +5,30 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Threading;
+using System.Windows.Input;
+using System.Windows.Interop;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.PlatformUI;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
     public partial class KnownMonikersExplorerControl : UserControl
     {
         private const string _filterPlaceholder = "Search";
-        public KnownMonikersExplorerControl()
+        private readonly ServicesDTO _state;
+
+        public KnownMonikersExplorerControl(ServicesDTO state)
         {
             Loaded += OnLoaded;
             InitializeComponent();
+            _state = state;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Loaded -= OnLoaded;
+            list.KeyUp += List_KeyUp;
+            list.MouseDoubleClick += Export_Click;
             txtFilter.Focus();
 
             PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
@@ -33,6 +37,18 @@ namespace KnownMonikersExplorer.ToolWindows
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(list.ItemsSource);
             view.Filter = UserFilter;
+        }
+
+        private void List_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Export_Click(this, new RoutedEventArgs());
+            }
+            else  if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                Copy_Click(this, new RoutedEventArgs());
+            }
         }
 
         private bool UserFilter(object item)
@@ -65,7 +81,20 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void Export_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show("Test");
+            var model = (KnownMonikersViewModel)list.SelectedItem;
+            var export = new ExportMonikerWindow(model, _state.ImageService);
+
+            var hwnd = new IntPtr(_state.DTE.MainWindow.HWnd);
+            var window = (System.Windows.Window)HwndSource.FromHwnd(hwnd).RootVisual;
+            export.Owner = window;
+
+            export.ShowDialog();
+        }
+
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            var model = (KnownMonikersViewModel)list.SelectedItem;
+            Clipboard.SetText(model.Name);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -14,13 +16,19 @@ namespace KnownMonikersExplorer.ToolWindows
             : this(null)
         { }
 
-        public KnownMonikersExplorerWindow(object state)
+        public KnownMonikersExplorerWindow(ServicesDTO state)
             : base()
         {
             Caption = Title;
 
-            var elm = new KnownMonikersExplorerControl();
+            var elm = new KnownMonikersExplorerControl(state);
             Content = elm;
         }
+    }
+
+    public class ServicesDTO
+    {
+        public IVsImageService2 ImageService { get; set; }
+        public DTE DTE { get; set; }
     }
 }

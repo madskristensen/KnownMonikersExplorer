@@ -50,6 +50,19 @@
                                             <EventSetter Event="Click" Handler="Export_Click"/>
                                         </Style>
                                     </MenuItem.Style>
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Export}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Copy Name to Clipboard">
+                                    <MenuItem.Style>
+                                        <Style TargetType="MenuItem">
+                                            <EventSetter Event="Click" Handler="Copy_Click"/>
+                                        </Style>
+                                    </MenuItem.Style>
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Copy}" />
+                                    </MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
                         </Setter.Value>
