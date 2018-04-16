@@ -4,7 +4,9 @@
 
 **Requires Visual Studio 2017.6 or newer**
 
-Provides a tool window for Visual Studio extension authors that lets you easily browse all the image monikers in the **KnownMonikers** collection.
+Provides a tool window for Visual Studio extension authors that lets you easily browse all the image monikers in the **KnownMonikers** catalog.
+
+Open the tool window from the top menu **View -> Other Windows -> KnownMonikers Explorer**.
 
 Filter the image monikers by typing in the search box.
 

@@ -13,7 +13,7 @@ namespace KnownMonikersExplorer
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)]
     [Guid(PackageGuids.guidKnownMonikersPackageString)]
-    [ProvideToolWindow(typeof(KnownMonikersExplorerWindow), Style = VsDockStyle.Tabbed, Window = KnownMonikersExplorerWindow.WindowGuidString, Orientation = ToolWindowOrientation.Left)]
+    [ProvideToolWindow(typeof(KnownMonikersExplorerWindow), Style = VsDockStyle.Tabbed, DockedWidth = 300, Window = "DocumentWell", Orientation = ToolWindowOrientation.Left)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class KnownMonikersPackage : AsyncPackage
     {

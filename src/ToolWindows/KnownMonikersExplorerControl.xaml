@@ -10,7 +10,7 @@
              xmlns:util="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="400">
+             d:DesignHeight="450" d:DesignWidth="400" UseLayoutRounding="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -22,7 +22,7 @@
                  Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"
                  />
 
-        <ListView Name="list" Margin="5,0" Grid.Row="1" Background="Transparent">
+        <ListView Name="list" Margin="5,0" Grid.Row="1" Background="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUIBackgroundBrushKey}}" theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
             <ListView.Resources>
                 <Style TargetType="GridViewColumnHeader">
                     <Setter Property="Visibility" Value="Collapsed" />

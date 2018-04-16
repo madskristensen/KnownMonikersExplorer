@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using EnvDTE;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -9,7 +10,7 @@ namespace KnownMonikersExplorer.ToolWindows
     [Guid(WindowGuidString)]
     public class KnownMonikersExplorerWindow : ToolWindowPane
     {
-        public const string WindowGuidString = "5a3bfbbe-afe7-46da-a7fa-b6313fa03acc";
+        public const string WindowGuidString = "cfff3162-9c8d-4244-b0a7-e3b39a968b24";
         public const string Title = "KnownMonikers Explorer";
 
         public KnownMonikersExplorerWindow()
@@ -20,6 +21,7 @@ namespace KnownMonikersExplorer.ToolWindows
             : base()
         {
             Caption = Title;
+            BitmapImageMoniker = KnownMonikers.Image;
 
             var elm = new KnownMonikersExplorerControl(state);
             Content = elm;
