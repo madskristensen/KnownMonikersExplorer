@@ -69,6 +69,7 @@
       <DependentUpon>KnownMonikersExplorerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolWindows\KnownMonikersViewModel.cs" />
+    <Compile Include="ToolWindows\VsTheme.cs" />
     <Compile Include="VSCommandTable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -32,7 +32,6 @@ namespace KnownMonikersExplorer.ToolWindows
             imgMoniker.Moniker = _model.Moniker;
 
             txtSize.Focus();
-            txtSize.SelectAll();
         }
 
         public static BitmapSource GetImage(ImageMoniker moniker, int size)
@@ -71,6 +70,11 @@ namespace KnownMonikersExplorer.ToolWindows
                 {
                     Close();
                 }
+            }
+            else
+            {
+                txtSize.Focus();
+                txtSize.SelectAll();
             }
         }
 
