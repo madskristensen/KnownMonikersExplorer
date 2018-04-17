@@ -4,10 +4,30 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KnownMonikersExplorer.ToolWindows"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:theming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:util="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Title="Export Image Moniker" Height="280" Width="330" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
-    <Grid Margin="10">
+             Background="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUIBackgroundBrushKey}}"
+             Title="Export Image Moniker" Height="250" Width="330" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" UseLayoutRounding="True" WindowStyle="None" ResizeMode="NoResize" BorderBrush="DarkGray" BorderThickness="1">
+    <Window.Resources>
+        <util:BrushToColorConverter x:Key="BrushToColorConverter"/>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.ComboBoxFocusedBackgroundBrushKey}}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.ComboBoxFocusedBorderBrushKey}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10" 
+          theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
@@ -18,7 +38,7 @@
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
 
-        <Image x:Name="imgMoniker" Grid.Row="1" Grid.Column="0" Margin="0 10 0 0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" Height="150" Stretch="None" />
+        <imaging:CrispImage x:Name="imgMoniker" Grid.Row="1" Grid.Column="0" Margin="0 10 0 0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="170" Height="170" Moniker="{x:Static catalog:KnownMonikers.MoveUp}" />
 
         <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
             <Grid.RowDefinitions>
@@ -29,11 +49,17 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="textBlock" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" FontWeight="SemiBold" Margin="0,13,15,10" Text="Width" VerticalAlignment="Top"/>
-            <TextBox x:Name="txtSize" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Height="23" Margin="0 10 0 0" Text="128" VerticalAlignment="Top" Width="50"/>
+            <TextBlock x:Name="textBlock" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" FontWeight="SemiBold" Margin="0,13,15,10" Text="Width" VerticalAlignment="Top" 
+                       Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"/>
+            <TextBox x:Name="txtSize" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Height="23" Margin="0 10 0 0" Text="128" VerticalAlignment="Top" Width="50"
+                     Background="{DynamicResource {x:Static platformUI:EnvironmentColors.ComboBoxFocusedBackgroundBrushKey}}"
+                     Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" FontWeight="SemiBold" Margin="0,3,15,10" Text="Height" VerticalAlignment="Top"/>
-            <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Height="23" Text="{Binding ElementName=txtSize, Path=Text}" VerticalAlignment="Top" Width="50" IsEnabled="False"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" FontWeight="SemiBold" Margin="0,3,15,10" Text="Height" VerticalAlignment="Top" 
+                       Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Height="23" Text="{Binding ElementName=txtSize, Path=Text}" VerticalAlignment="Top" Width="50" IsEnabled="False"
+                     Background="{DynamicResource {x:Static platformUI:EnvironmentColors.ComboBoxFocusedBackgroundBrushKey}}"
+                     Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"/>
         </Grid>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0 10 0 0">
@@ -44,8 +70,9 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="btnOk" Grid.Column="1" Content="Export..." IsDefault="true" Margin="0,0,10,0" HorizontalAlignment="Right" Width="75" Click="BtnOk_Click" ToolTip="Exports the currently selected Image Moniker"/>
-            <Button x:Name="btnCancel" Grid.Column="3" Content="Close" IsCancel="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="75"/>
+            <Button x:Name="btnOk" Grid.Column="1" Content="Export..." IsDefault="true" Margin="0,0,10,0" HorizontalAlignment="Right" Width="75" Height="25" Click="BtnOk_Click" />
+            <Button x:Name="btnCancel" Grid.Column="3" Content="Cancel" IsCancel="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="75" Height="25" />
+            
         </Grid>
     </Grid>
 </Window>

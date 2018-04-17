@@ -29,7 +29,7 @@ namespace KnownMonikersExplorer.ToolWindows
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Icon = GetImage(KnownMonikers.Export, 16);
-            imgMoniker.Source = GetImage(_model.Moniker, 150);
+            imgMoniker.Moniker = _model.Moniker;
 
             txtSize.Focus();
             txtSize.SelectAll();
