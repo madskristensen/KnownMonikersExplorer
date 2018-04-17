@@ -30,6 +30,7 @@ This will copy the name of the moniker to the clipboard. You can also use **Ctrl
 
 * [Image Service and Catalog](https://msdn.microsoft.com/en-US/library/mt628927.aspx)
 * [Image Libray Viewer](https://msdn.microsoft.com/en-us/library/mt629250.aspx)
+* [Glyph List](http://glyphlist.azurewebsites.net/)
 
 ## License
 [Apache 2.0](LICENSE)

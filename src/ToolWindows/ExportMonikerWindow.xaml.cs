@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -62,14 +62,15 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            int.TryParse(txtSize.Text, out int size);
-
-            BitmapSource image = GetImage(_model.Moniker, size);
-            bool saved = SaveImage(image, _model.Name);
-
-            if (saved)
+            if (int.TryParse(txtSize.Text, out int size))
             {
-                Close();
+                BitmapSource image = GetImage(_model.Moniker, size);
+                bool saved = SaveImage(image, _model.Name);
+
+                if (saved)
+                {
+                    Close();
+                }
             }
         }
 
@@ -83,14 +84,13 @@ namespace KnownMonikersExplorer.ToolWindows
                 Title = Title,
             };
 
-            DialogResult saved = sfd.ShowDialog();
-
-            if (saved == System.Windows.Forms.DialogResult.OK)
+            if (sfd.ShowDialog() == true)
             {
                 SaveBitmapToDisk(image, sfd.FileName);
+                return true;
             }
 
-            return saved == System.Windows.Forms.DialogResult.OK;
+            return false;
         }
 
         private static void SaveBitmapToDisk(BitmapSource image, string fileName)
@@ -102,7 +102,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
             using (var fileStream = new FileStream(fileName, FileMode.Create))
             {
-
                 BitmapEncoder encoder = GetEncoder(fileName);
                 encoder.Frames.Add(BitmapFrame.Create(image));
                 encoder.Save(fileStream);
