@@ -30,6 +30,9 @@
                   theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
             
             <ListView.Resources>
+                <Style TargetType="GridViewColumnHeader">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
                 <util:BrushToColorConverter x:Key="BrushToColorConverter"/>
             </ListView.Resources>
 
@@ -74,9 +77,9 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker}" Margin="0,0,5,0" />
-                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}" />
+                    <StackPanel Orientation="Horizontal" Width="250" Height="25">
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker, IsAsync=True}" Margin="0,0,5,0" />
+                        <Label Content="{Binding Name}" Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
