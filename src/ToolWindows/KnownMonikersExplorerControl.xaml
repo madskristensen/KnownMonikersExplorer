@@ -10,6 +10,7 @@
              xmlns:util="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              mc:Ignorable="d" 
+             local:VsTheme.UseVsTheme="True"
              d:DesignHeight="450" d:DesignWidth="400" UseLayoutRounding="True">
     <Grid>
         <Grid.RowDefinitions>
@@ -17,16 +18,12 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <TextBox Name="txtFilter" Grid.Row="0" Height="23" Margin="5" TextWrapping="Wrap" TextChanged="TextBox_TextChanged"
-                 Background="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUIBackgroundBrushKey}}"
-                 Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"
-                 />
+        <TextBox Name="txtFilter" Grid.Row="0" Height="23" Margin="5" TextWrapping="Wrap" TextChanged="TextBox_TextChanged"/>
 
         <ListView Name="list" Margin="5,0" Grid.Row="1" ItemsSource="{Binding Monikers}"
                   SelectionMode="Single"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                   VirtualizingPanel.VirtualizationMode="Recycling"
-                  Background="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUIBackgroundBrushKey}}" 
                   theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
             
             <ListView.Resources>
@@ -38,14 +35,6 @@
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="Transparent" />
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="Transparent" />
-                        </Trigger>
-                    </Style.Triggers>
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
@@ -79,7 +68,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Width="250" Height="25">
                         <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker, IsAsync=True}" Margin="0,0,5,0" />
-                        <Label Content="{Binding Name}" Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}" />
+                        <Label Content="{Binding Name}" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
