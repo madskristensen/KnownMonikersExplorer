@@ -12,7 +12,7 @@ namespace KnownMonikersExplorer.ToolWindows
         private static Dictionary<UIElement, bool> _isUsingVsTheme = new Dictionary<UIElement, bool>();
         private static Dictionary<UIElement, object> _originalBackgrounds = new Dictionary<UIElement, object>();
 
-        public static DependencyProperty UseVsThemeProperty = DependencyProperty.RegisterAttached("UseVsTheme", typeof(bool), typeof(ContentControl), new PropertyMetadata(false, UseVsThemePropertyChanged));
+        public static DependencyProperty UseVsThemeProperty = DependencyProperty.RegisterAttached("UseVsTheme", typeof(bool), typeof(VsTheme), new PropertyMetadata(false, UseVsThemePropertyChanged));
 
         private static void UseVsThemePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
