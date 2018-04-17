@@ -22,11 +22,14 @@
                  Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}"
                  />
 
-        <ListView Name="list" Margin="5,0" Grid.Row="1" Background="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUIBackgroundBrushKey}}" theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
+        <ListView Name="list" Margin="5,0" Grid.Row="1" ItemsSource="{Binding Monikers}"
+                  SelectionMode="Single"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  Background="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUIBackgroundBrushKey}}" 
+                  theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
+            
             <ListView.Resources>
-                <Style TargetType="GridViewColumnHeader">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </Style>
                 <util:BrushToColorConverter x:Key="BrushToColorConverter"/>
             </ListView.Resources>
 
@@ -67,23 +70,16 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
-
             </ListView.ItemContainerStyle>
 
-            <ListView.View>
-                <GridView AllowsColumnReorder="False">
-                    <GridViewColumn x:Name="GridViewColumnName"  Width="200">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker}" />
-                                    <Label Content="{Binding Name}" Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker}" Margin="0,0,5,0" />
+                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.BrandedUITitleBrushKey}}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </UserControl>

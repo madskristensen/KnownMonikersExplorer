@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -20,9 +21,12 @@ namespace KnownMonikersExplorer.ToolWindows
         public KnownMonikersExplorerControl(ServicesDTO state)
         {
             Loaded += OnLoaded;
-            InitializeComponent();
             _state = state;
+            DataContext = this;
+            InitializeComponent();
         }
+
+        public IEnumerable<KnownMonikersViewModel> Monikers => _state.Monikers;
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -30,10 +34,6 @@ namespace KnownMonikersExplorer.ToolWindows
             list.KeyUp += List_KeyUp;
             list.MouseDoubleClick += Export_Click;
             txtFilter.Focus();
-
-            PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
-
-            list.ItemsSource = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null)));
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(list.ItemsSource);
             view.Filter = UserFilter;
@@ -45,7 +45,7 @@ namespace KnownMonikersExplorer.ToolWindows
             {
                 Export_Click(this, new RoutedEventArgs());
             }
-            else  if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
+            else if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 Copy_Click(this, new RoutedEventArgs());
             }

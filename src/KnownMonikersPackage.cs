@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
 using KnownMonikersExplorer.ToolWindows;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -45,8 +49,11 @@ namespace KnownMonikersExplorer
 
         protected override async Task<object> InitializeToolWindowAsync(Type toolWindowType, int id, CancellationToken cancellationToken)
         {
+            PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
+
             return new ServicesDTO
             {
+                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))),
                 DTE = await GetServiceAsync(typeof(DTE)) as DTE,
 
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread

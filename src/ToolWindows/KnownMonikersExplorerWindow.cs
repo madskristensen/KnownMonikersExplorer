@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio.Imaging;
@@ -32,5 +33,6 @@ namespace KnownMonikersExplorer.ToolWindows
     {
         public IVsImageService2 ImageService { get; set; }
         public DTE DTE { get; set; }
+        public IEnumerable<KnownMonikersViewModel> Monikers { get; set; }
     }
 }
