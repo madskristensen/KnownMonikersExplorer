@@ -4,6 +4,11 @@
 
 **Requires Visual Studio 2017.6 or newer**
 
+Download this extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.KnownMonikersExplorer)
+or get the [CI build](http://vsixgallery.com/extension/c38f3512-4653-4d97-a4c5-860a425209f5/).
+
+----------------------------------------------
+
 Provides a tool window for Visual Studio extension authors that lets you easily browse all the image monikers in the **KnownMonikers** catalog.
 
 Open the tool window from the top menu **View -> Other Windows -> KnownMonikers Explorer**.
