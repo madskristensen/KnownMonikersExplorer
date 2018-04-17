@@ -17,7 +17,7 @@ Right-click any moniker for a list of actions to take.
 ![Context Menu](art/context-menu.png)
 
 ## Export...
-Export the image moniker to a .png file in the size you specify.
+Export the image moniker to file in the size you specify. PNG, JPEG and Gif formats are supported
 
 ![Export Dialog](art/export-dialog.png)
 

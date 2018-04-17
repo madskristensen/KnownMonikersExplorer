@@ -66,6 +66,11 @@ namespace KnownMonikersExplorer.ToolWindows
 
             BitmapSource image = GetImage(_model.Moniker, size);
             bool saved = SaveImage(image, _model.Name);
+
+            if (saved)
+            {
+                Close();
+            }
         }
 
         private bool SaveImage(BitmapSource image, string name)
@@ -73,7 +78,9 @@ namespace KnownMonikersExplorer.ToolWindows
             var sfd = new SaveFileDialog
             {
                 FileName = name + ".png",
-                DefaultExt = ".png"
+                DefaultExt = ".png",
+                Filter = "PNG Image|*.png|JPEG Image|*.jpg|Gif Image|*.gif",
+                Title = Title,
             };
 
             DialogResult saved = sfd.ShowDialog();
@@ -95,10 +102,27 @@ namespace KnownMonikersExplorer.ToolWindows
 
             using (var fileStream = new FileStream(fileName, FileMode.Create))
             {
-                BitmapEncoder encoder = new PngBitmapEncoder();
+
+                BitmapEncoder encoder = GetEncoder(fileName);
                 encoder.Frames.Add(BitmapFrame.Create(image));
                 encoder.Save(fileStream);
             }
+        }
+
+        private static BitmapEncoder GetEncoder(string fileName)
+        {
+            string ext = Path.GetExtension(fileName).ToLowerInvariant();
+
+            switch (ext)
+            {
+                case ".jpg":
+                case ".jpeg":
+                    return new JpegBitmapEncoder();
+                case ".png":
+                    return new PngBitmapEncoder();
+            }
+
+            return new GifBitmapEncoder();
         }
 
         public class ViewModel
