@@ -5,6 +5,7 @@
         <DisplayName>KnownMonikers Explorer</DisplayName>
         <Description xml:space="preserve">A tool window for Visual Studio extension authors to explore the KnownMonikers image collection</Description>
         <MoreInfo>https://github.com/madskristensen/KnownMonikersExplorer</MoreInfo>
+        <License>Resources\LICENSE</License>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
         <Tags>vsix, knownmonikers, image</Tags>
