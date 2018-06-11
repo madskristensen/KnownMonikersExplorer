@@ -77,7 +77,7 @@ namespace KnownMonikersExplorer.ToolWindows
         private void Export_Click(object sender, RoutedEventArgs e)
         {
             var model = (KnownMonikersViewModel)list.SelectedItem;
-            var export = new ExportMonikerWindow(model, _state.ImageService);
+            var export = new ExportMonikerWindow(model, _state.ImageService, _state.DTE);
 
             var hwnd = new IntPtr(_state.DTE.MainWindow.HWnd);
             var window = (System.Windows.Window)HwndSource.FromHwnd(hwnd).RootVisual;

@@ -15,12 +15,13 @@ namespace KnownMonikersExplorer.ToolWindows
     {
         private static KnownMonikersViewModel _model;
         private static IVsImageService2 _imageService;
+        private static EnvDTE.DTE _dte;
 
-        public ExportMonikerWindow(KnownMonikersViewModel model, IVsImageService2 imageService)
+        public ExportMonikerWindow(KnownMonikersViewModel model, IVsImageService2 imageService, EnvDTE.DTE dte)
         {
             _model = model;
             _imageService = imageService;
-
+            _dte = dte;
             InitializeComponent();
 
             Loaded += OnLoaded;
@@ -91,6 +92,7 @@ namespace KnownMonikersExplorer.ToolWindows
             if (sfd.ShowDialog() == true)
             {
                 SaveBitmapToDisk(image, sfd.FileName);
+                OptimizeImage(sfd.FileName);
                 return true;
             }
 
@@ -109,6 +111,16 @@ namespace KnownMonikersExplorer.ToolWindows
                 BitmapEncoder encoder = GetEncoder(fileName);
                 encoder.Frames.Add(BitmapFrame.Create(image));
                 encoder.Save(fileStream);
+            }
+        }
+
+        private static void OptimizeImage(string fileName)
+        {
+            EnvDTE.Command cmd = _dte.Commands.Item("ImageOptimizer.OptimizeLossless");
+
+            if (cmd != null && cmd.IsAvailable)
+            {
+                _dte.Commands.Raise(cmd.Guid, cmd.ID, fileName, null);
             }
         }
 
