@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
@@ -116,11 +117,18 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private static void OptimizeImage(string fileName)
         {
-            EnvDTE.Command cmd = _dte.Commands.Item("ImageOptimizer.OptimizeLossless");
-
-            if (cmd != null && cmd.IsAvailable)
+            try
             {
-                _dte.Commands.Raise(cmd.Guid, cmd.ID, fileName, null);
+                EnvDTE.Command cmd = _dte.Commands.Item("ImageOptimizer.OptimizeLossless");
+
+                if (cmd != null && cmd.IsAvailable)
+                {
+                    _dte.Commands.Raise(cmd.Guid, cmd.ID, fileName, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Write(ex);
             }
         }
 
