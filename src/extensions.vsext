@@ -1,0 +1,12 @@
+{
+  "id": "15714ab6-b8ed-43b6-83d1-d4eb5de9eb5f",
+  "name": "My Visual Studio extensions",
+  "description": "Public Marketplace extensions that adds value to this extension",
+  "version": "1.0",
+  "extensions": [
+    {
+      "name": "Image Optimizer",
+      "vsixId": "bf95754f-93d3-42ff-bfe3-e05d23188b08"
+    }
+  ]
+}
