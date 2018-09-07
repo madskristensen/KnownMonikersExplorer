@@ -51,14 +51,13 @@ namespace KnownMonikersExplorer
         {
             PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
 
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
             return new ServicesDTO
             {
                 Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))),
                 DTE = await GetServiceAsync(typeof(DTE)) as DTE,
-
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
                 ImageService = await GetServiceAsync(typeof(SVsImageService)) as IVsImageService2
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
             };
         }
     }
