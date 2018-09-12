@@ -5,14 +5,14 @@
 // ------------------------------------------------------------------------------
 namespace KnownMonikersExplorer
 {
-				static class Vsix
-				{
-								public const string Id = "c38f3512-4653-4d97-a4c5-860a425209f5";
-								public const string Name = "KnownMonikers Explorer";
-								public const string Description = @"A tool window for Visual Studio extension authors to explore the KnownMonikers image collection";
-								public const string Language = "en-US";
-								public const string Version = "1.0.99999";
-								public const string Author = "Mads Kristensen";
-								public const string Tags = "vsix, knownmonikers, image";
-				}
+    static class Vsix
+    {
+        public const string Id = "c38f3512-4653-4d97-a4c5-860a425209f5";
+        public const string Name = "KnownMonikers Explorer";
+        public const string Description = @"A tool window for Visual Studio extension authors to explore the KnownMonikers image collection";
+        public const string Language = "en-US";
+        public const string Version = "1.0.99999";
+        public const string Author = "Mads Kristensen";
+        public const string Tags = "vsix, knownmonikers, image";
+    }
 }
