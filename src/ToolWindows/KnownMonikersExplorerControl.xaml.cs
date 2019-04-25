@@ -36,6 +36,8 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void List_KeyUp(object sender, KeyEventArgs e)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+
             if (e.Key == Key.Enter)
             {
                 Export_Click(this, new RoutedEventArgs());
@@ -76,6 +78,8 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void Export_Click(object sender, RoutedEventArgs e)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+
             var model = (KnownMonikersViewModel)list.SelectedItem;
             var export = new ExportMonikerWindow(model, _state.ImageService, _state.DTE);
 

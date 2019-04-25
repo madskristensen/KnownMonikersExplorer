@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
     public static class VsTheme
     {
-        private static Dictionary<UIElement, bool> _isUsingVsTheme = new Dictionary<UIElement, bool>();
-        private static Dictionary<UIElement, object> _originalBackgrounds = new Dictionary<UIElement, object>();
+        private static readonly Dictionary<UIElement, bool> _isUsingVsTheme = new Dictionary<UIElement, bool>();
+        private static readonly Dictionary<UIElement, object> _originalBackgrounds = new Dictionary<UIElement, object>();
 
         public static DependencyProperty UseVsThemeProperty = DependencyProperty.RegisterAttached("UseVsTheme", typeof(bool), typeof(VsTheme), new PropertyMetadata(false, UseVsThemePropertyChanged));
 

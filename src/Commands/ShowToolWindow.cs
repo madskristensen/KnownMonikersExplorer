@@ -1,8 +1,8 @@
-﻿using System;
-using System.ComponentModel.Design;
-using KnownMonikersExplorer.ToolWindows;
+﻿using KnownMonikersExplorer.ToolWindows;
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
+using System;
+using System.ComponentModel.Design;
 using Task = System.Threading.Tasks.Task;
 
 namespace KnownMonikersExplorer

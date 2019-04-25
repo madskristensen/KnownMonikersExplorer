@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -30,6 +30,8 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Icon = GetImage(KnownMonikers.Export, 16);
             imgMoniker.Moniker = _model.Moniker;
 
@@ -56,13 +58,17 @@ namespace KnownMonikersExplorer.ToolWindows
             result.get_Data(out object data);
 
             if (data == null)
+            {
                 return null;
+            }
 
             return data as BitmapSource;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (int.TryParse(txtSize.Text, out int size))
             {
                 BitmapSource image = GetImage(_model.Moniker, size);
@@ -82,6 +88,8 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private bool SaveImage(BitmapSource image, string name)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var sfd = new SaveFileDialog
             {
                 FileName = name + ".png",
@@ -105,7 +113,9 @@ namespace KnownMonikersExplorer.ToolWindows
             string fileParentPath = Path.GetDirectoryName(fileName);
 
             if (Directory.Exists(fileParentPath) == false)
+            {
                 Directory.CreateDirectory(fileParentPath);
+            }
 
             using (var fileStream = new FileStream(fileName, FileMode.Create))
             {
@@ -117,6 +127,8 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private static void OptimizeImage(string fileName)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
                 EnvDTE.Command cmd = _dte.Commands.Item("ImageOptimizer.OptimizeLossless");
@@ -160,13 +172,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
             public ImageMoniker Moniker { get; set; }
 
-            public ImageSource Image
-            {
-                get
-                {
-                    return GetImage(Moniker, 16);
-                }
-            }
+            public ImageSource Image => GetImage(Moniker, 16);
 
             public override string ToString()
             {
