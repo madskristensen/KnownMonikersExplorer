@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace KnownMonikersExplorer.ToolWindows
@@ -171,8 +170,6 @@ namespace KnownMonikersExplorer.ToolWindows
             public string Label { get; set; }
 
             public ImageMoniker Moniker { get; set; }
-
-            public ImageSource Image => GetImage(Moniker, 16);
 
             public override string ToString()
             {

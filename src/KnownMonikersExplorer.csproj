@@ -85,7 +85,10 @@
     <Content Include="extensions.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="source.extension.vsixmanifest" />
+    <None Include="source.extension.vsixmanifest">
+      <Generator>VsixManifestGenerator</Generator>
+      <LastGenOutput>source.extension.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -121,11 +124,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Madskristensen.VisualStudio.SDK" Version="15.6.80-pre" />
-    <PackageReference Include="Madskristensen.VSSDK.Resourcer">
-      <Version>1.0.10</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>15.9.3032</Version>
+      <Version>16.1.3106</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
