@@ -38,4 +38,5 @@ This will copy the name of the moniker to the clipboard. You can also use **Ctrl
 * [Glyph List](http://glyphlist.azurewebsites.net/)
 
 ## License
-[Apache 2.0](LICENSE)
+* This extension: [Apache 2.0](LICENSE)
+* [License for the images](https://www.microsoft.com/download/details.aspx?id=35825)
