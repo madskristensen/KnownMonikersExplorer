@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -94,6 +95,28 @@ namespace KnownMonikersExplorer.ToolWindows
         {
             var model = (KnownMonikersViewModel)list.SelectedItem;
             Clipboard.SetText(model.Name);
+        }
+
+        private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var listViewItem = VisualTreeHelperExtensions.FindAncestor<ListViewItem>((DependencyObject)(e.OriginalSource));
+            if (listViewItem is null)
+                e.Handled = true;
+        }
+    }
+
+    internal static class VisualTreeHelperExtensions
+    {
+        internal static T FindAncestor<T>(DependencyObject dependencyObject)
+            where T : class
+        {
+            DependencyObject target = dependencyObject;
+            do
+            {
+                target = VisualTreeHelper.GetParent(target);
+            }
+            while (target != null && !(target is T));
+            return target as T;
         }
     }
 }
