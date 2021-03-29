@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using EnvDTE80;
@@ -30,39 +29,15 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            Icon = GetImage(KnownMonikers.Export, 16);
-            imgMoniker.Moniker = _model.Moniker;
-
-            txtSize.Focus();
-        }
-
-        public static BitmapSource GetImage(ImageMoniker moniker, int size)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            var imageAttributes = new ImageAttributes
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags,
-                ImageType = (uint)_UIImageType.IT_Bitmap,
-                Format = (uint)_UIDataFormat.DF_WPF,
-                Dpi = 96,
-                LogicalHeight = size,
-                LogicalWidth = size,
-                StructSize = Marshal.SizeOf(typeof(ImageAttributes)),
-            };
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            IVsUIObject result = _imageService.GetImage(moniker, imageAttributes);
+                Icon = await KnownMonikers.Export.ToBitmapSourceAsync(16);
+                imgMoniker.Moniker = _model.Moniker;
 
-            result.get_Data(out var data);
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            return data as BitmapSource;
+                txtSize.Focus();
+            });
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
@@ -71,13 +46,16 @@ namespace KnownMonikersExplorer.ToolWindows
 
             if (int.TryParse(txtSize.Text, out var size))
             {
-                BitmapSource image = GetImage(_model.Moniker, size);
-                var saved = SaveImage(image, _model.Name);
-
-                if (saved)
+                ThreadHelper.JoinableTaskFactory.Run(async delegate
                 {
-                    Close();
-                }
+                    BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size);
+                    var saved = SaveImage(image, _model.Name);
+
+                    if (saved)
+                    {
+                        Close();
+                    }
+                });
             }
             else
             {

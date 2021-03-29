@@ -57,13 +57,13 @@ namespace KnownMonikersExplorer.ToolWindows
             }
             else
             {
-                return ((item as KnownMonikersViewModel).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+                return (item as KnownMonikersViewModel).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) >= 0;
             }
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string text = ((TextBox)sender).Text;
+            var text = ((TextBox)sender).Text;
             RefreshAsync(text).ConfigureAwait(false);
         }
 
@@ -99,23 +99,27 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var listViewItem = VisualTreeHelperExtensions.FindAncestor<ListViewItem>((DependencyObject)(e.OriginalSource));
+            ListViewItem listViewItem = VisualTreeHelperExtensions.FindAncestor<ListViewItem>((DependencyObject)e.OriginalSource);
+
             if (listViewItem is null)
+            {
                 e.Handled = true;
+            }
         }
     }
 
     internal static class VisualTreeHelperExtensions
     {
-        internal static T FindAncestor<T>(DependencyObject dependencyObject)
-            where T : class
+        internal static T FindAncestor<T>(DependencyObject dependencyObject) where T : class
         {
             DependencyObject target = dependencyObject;
+
             do
             {
                 target = VisualTreeHelper.GetParent(target);
             }
             while (target != null && !(target is T));
+            
             return target as T;
         }
     }
