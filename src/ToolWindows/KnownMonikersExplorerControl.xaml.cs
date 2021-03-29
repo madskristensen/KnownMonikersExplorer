@@ -82,10 +82,10 @@ namespace KnownMonikersExplorer.ToolWindows
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 
             var model = (KnownMonikersViewModel)list.SelectedItem;
-            var export = new ExportMonikerWindow(model, _state.ImageService, _state.DTE);
+            var export = new ExportMonikerWindow(model, _state.DTE);
 
             var hwnd = new IntPtr(_state.DTE.MainWindow.HWnd);
-            var window = (System.Windows.Window)HwndSource.FromHwnd(hwnd).RootVisual;
+            var window = (Window)HwndSource.FromHwnd(hwnd).RootVisual;
             export.Owner = window;
 
             export.ShowDialog();
@@ -119,7 +119,7 @@ namespace KnownMonikersExplorer.ToolWindows
                 target = VisualTreeHelper.GetParent(target);
             }
             while (target != null && !(target is T));
-            
+
             return target as T;
         }
     }

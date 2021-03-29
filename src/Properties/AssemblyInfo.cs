@@ -1,6 +1,6 @@
-﻿using KnownMonikersExplorer;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using KnownMonikersExplorer;
 
 [assembly: AssemblyTitle(Vsix.Name)]
 [assembly: AssemblyDescription(Vsix.Description)]

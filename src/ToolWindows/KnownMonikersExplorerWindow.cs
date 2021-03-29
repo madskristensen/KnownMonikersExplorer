@@ -31,7 +31,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
     public class ServicesDTO
     {
-        public IVsImageService2 ImageService { get; set; }
         public DTE2 DTE { get; set; }
         public IEnumerable<KnownMonikersViewModel> Monikers { get; set; }
     }

@@ -17,7 +17,6 @@ namespace KnownMonikersExplorer
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration(Vsix.Name, Vsix.Description, Vsix.Version)]
     [Guid(PackageGuids.guidKnownMonikersPackageString)]
-    [ProvideBindingPath()]
     [ProvideToolWindow(typeof(KnownMonikersExplorerWindow), Style = VsDockStyle.Tabbed, DockedWidth = 300, Window = "DocumentWell", Orientation = ToolWindowOrientation.Left)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class KnownMonikersPackage : AsyncPackage
@@ -52,13 +51,10 @@ namespace KnownMonikersExplorer
         {
             PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
 
-            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
             return new ServicesDTO
             {
                 Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))),
-                DTE = await VS.GetDTEAsync(),
-                ImageService = await VS.GetServiceAsync<SVsImageService, IVsImageService2>()
+                DTE = await VS.GetDTEAsync()
             };
         }
     }

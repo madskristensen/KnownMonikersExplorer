@@ -14,13 +14,11 @@ namespace KnownMonikersExplorer.ToolWindows
     public partial class ExportMonikerWindow : Window
     {
         private static KnownMonikersViewModel _model;
-        private static IVsImageService2 _imageService;
         private static DTE2 _dte;
 
-        public ExportMonikerWindow(KnownMonikersViewModel model, IVsImageService2 imageService, DTE2 dte)
+        public ExportMonikerWindow(KnownMonikersViewModel model, DTE2 dte)
         {
             _model = model;
-            _imageService = imageService;
             _dte = dte;
             InitializeComponent();
 
@@ -42,8 +40,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
             if (int.TryParse(txtSize.Text, out var size))
             {
                 ThreadHelper.JoinableTaskFactory.Run(async delegate
@@ -118,7 +114,7 @@ namespace KnownMonikersExplorer.ToolWindows
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.Write(ex);
+                ex.Log();
             }
         }
 
