@@ -1,4 +1,4 @@
-﻿using EnvDTE;
+﻿using EnvDTE80;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -32,7 +32,7 @@ namespace KnownMonikersExplorer.ToolWindows
     public class ServicesDTO
     {
         public IVsImageService2 ImageService { get; set; }
-        public DTE DTE { get; set; }
+        public DTE2 DTE { get; set; }
         public IEnumerable<KnownMonikersViewModel> Monikers { get; set; }
     }
 }

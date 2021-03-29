@@ -11,7 +11,7 @@ namespace KnownMonikersExplorer
         public const string Name = "KnownMonikers Explorer";
         public const string Description = @"A tool window for Visual Studio extension authors to explore the KnownMonikers image collection";
         public const string Language = "en-US";
-        public const string Version = "1.1.9999";
+        public const string Version = "1.2.9999";
         public const string Author = "Mads Kristensen";
         public const string Tags = "vsix, knownmonikers, image";
     }

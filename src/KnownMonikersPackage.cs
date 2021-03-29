@@ -1,15 +1,15 @@
-﻿using EnvDTE;
-using KnownMonikersExplorer.ToolWindows;
-using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Community.VisualStudio.Toolkit;
+using KnownMonikersExplorer.ToolWindows;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace KnownMonikersExplorer
@@ -56,8 +56,8 @@ namespace KnownMonikersExplorer
             return new ServicesDTO
             {
                 Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))),
-                DTE = await GetServiceAsync(typeof(DTE)) as DTE,
-                ImageService = await GetServiceAsync(typeof(SVsImageService)) as IVsImageService2
+                DTE = await VS.GetDTEAsync(),
+                ImageService = await VS.GetServiceAsync<SVsImageService, IVsImageService2>()
             };
         }
     }

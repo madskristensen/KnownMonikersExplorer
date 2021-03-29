@@ -1,13 +1,14 @@
-﻿using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using EnvDTE80;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -15,9 +16,9 @@ namespace KnownMonikersExplorer.ToolWindows
     {
         private static KnownMonikersViewModel _model;
         private static IVsImageService2 _imageService;
-        private static EnvDTE.DTE _dte;
+        private static DTE2 _dte;
 
-        public ExportMonikerWindow(KnownMonikersViewModel model, IVsImageService2 imageService, EnvDTE.DTE dte)
+        public ExportMonikerWindow(KnownMonikersViewModel model, IVsImageService2 imageService, DTE2 dte)
         {
             _model = model;
             _imageService = imageService;
@@ -54,7 +55,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
             IVsUIObject result = _imageService.GetImage(moniker, imageAttributes);
 
-            result.get_Data(out object data);
+            result.get_Data(out var data);
 
             if (data == null)
             {
@@ -68,10 +69,10 @@ namespace KnownMonikersExplorer.ToolWindows
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (int.TryParse(txtSize.Text, out int size))
+            if (int.TryParse(txtSize.Text, out var size))
             {
                 BitmapSource image = GetImage(_model.Moniker, size);
-                bool saved = SaveImage(image, _model.Name);
+                var saved = SaveImage(image, _model.Name);
 
                 if (saved)
                 {
@@ -109,7 +110,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private static void SaveBitmapToDisk(BitmapSource image, string fileName)
         {
-            string fileParentPath = Path.GetDirectoryName(fileName);
+            var fileParentPath = Path.GetDirectoryName(fileName);
 
             if (Directory.Exists(fileParentPath) == false)
             {
@@ -145,7 +146,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private static BitmapEncoder GetEncoder(string fileName)
         {
-            string ext = Path.GetExtension(fileName).ToLowerInvariant();
+            var ext = Path.GetExtension(fileName).ToLowerInvariant();
 
             switch (ext)
             {
