@@ -1,31 +1,47 @@
-﻿using EnvDTE80;
-using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using Community.VisualStudio.Toolkit;
+using EnvDTE80;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Shell;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
-    [Guid(WindowGuidString)]
-    public class KnownMonikersExplorerWindow : ToolWindowPane
+    public class KnownMonikersExplorerWindow : BaseToolWindow<KnownMonikersExplorerWindow>
     {
-        public const string WindowGuidString = "cfff3162-9c8d-4244-b0a7-e3b39a968b24";
-        public const string Title = "KnownMonikers Explorer";
+        public override string GetTitle(int toolWindowId) => "KnownMonikers Explorer";
 
-        public KnownMonikersExplorerWindow()
-            : this(null)
-        { }
+        public override Type PaneType => typeof(Pane);
 
-        public KnownMonikersExplorerWindow(ServicesDTO state)
-            : base()
+        public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken)
         {
-            Caption = Title;
-            BitmapImageMoniker = KnownMonikers.Image;
+            PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
 
-            var elm = new KnownMonikersExplorerControl(state);
-            Content = elm;
+            var state = new ServicesDTO
+            {
+                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))),
+                DTE = await VS.GetDTEAsync()
+            };
+
+            await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            return new KnownMonikersExplorerControl(state);
+        }
+
+        [Guid("cfff3162-9c8d-4244-b0a7-e3b39a968b24")]
+        public class Pane : ToolWindowPane
+        {
+            public Pane()
+            {
+                BitmapImageMoniker = KnownMonikers.Image;
+            }
         }
     }
 

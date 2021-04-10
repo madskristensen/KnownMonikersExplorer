@@ -11,7 +11,7 @@
              xmlns:toolkit="clr-namespace:Community.VisualStudio.Toolkit;assembly=Community.VisualStudio.Toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             toolkit:VsTheme.UseVsTheme="True"
+             toolkit:Themes.UseVsTheme="True"
              Title="Export Image Moniker" Height="350" Width="270" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" UseLayoutRounding="True" WindowStyle="None" ResizeMode="NoResize" BorderBrush="DarkGray" BorderThickness="1" SizeToContent="WidthAndHeight">
     <Grid Margin="10">
         <Grid.RowDefinitions>

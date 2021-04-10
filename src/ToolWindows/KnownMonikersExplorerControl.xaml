@@ -10,7 +10,7 @@
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:toolkit="clr-namespace:Community.VisualStudio.Toolkit;assembly=Community.VisualStudio.Toolkit"
              mc:Ignorable="d"
-             toolkit:VsTheme.UseVsTheme="True"
+             toolkit:Themes.UseVsTheme="True"
              d:DesignHeight="450" d:DesignWidth="400" UseLayoutRounding="True">
     <Grid>
         <Grid.RowDefinitions>

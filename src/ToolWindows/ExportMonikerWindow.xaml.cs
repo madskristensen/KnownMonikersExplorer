@@ -6,7 +6,6 @@ using EnvDTE80;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 
 namespace KnownMonikersExplorer.ToolWindows
@@ -45,6 +44,8 @@ namespace KnownMonikersExplorer.ToolWindows
                 ThreadHelper.JoinableTaskFactory.Run(async delegate
                 {
                     BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size);
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
                     var saved = SaveImage(image, _model.Name);
 
                     if (saved)
