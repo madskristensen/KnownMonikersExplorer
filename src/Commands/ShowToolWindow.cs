@@ -5,11 +5,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace KnownMonikersExplorer
 {
+    [Command(PackageIds.ShowToolWindowId)]
     internal sealed class ShowToolWindow : BaseCommand<ShowToolWindow>
     {
-        public ShowToolWindow()
-            : base(PackageGuids.guidKnownMonikersPackageCmdSet, PackageIds.ShowToolWindowId) { }
-
         protected override Task ExecuteAsync(OleMenuCmdEventArgs e) =>
             KnownMonikersExplorerWindow.ShowAsync();
     }

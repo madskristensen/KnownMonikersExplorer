@@ -14,9 +14,6 @@ namespace KnownMonikersExplorer
     {
         public const string guidKnownMonikersPackageString = "4256ca61-2162-4ca2-8d10-4c6a2794521c";
         public static Guid guidKnownMonikersPackage = new Guid(guidKnownMonikersPackageString);
-
-        public const string guidKnownMonikersPackageCmdSetString = "4d079c3e-e2dc-4421-9b0d-f243cfb1591a";
-        public static Guid guidKnownMonikersPackageCmdSet = new Guid(guidKnownMonikersPackageCmdSetString);
     }
     /// <summary>
     /// Helper class that encapsulates all CommandIDs uses across VS Package.

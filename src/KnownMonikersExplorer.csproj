@@ -124,8 +124,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Community.VisualStudio.Toolkit">
-      <Version>16.0.71</Version>
+    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
+      <Version>16.0.75.40</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

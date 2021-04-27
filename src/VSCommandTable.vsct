@@ -7,7 +7,7 @@
 
   <Commands package="guidKnownMonikersPackage">
     <Buttons>
-      <Button guid="guidKnownMonikersPackageCmdSet" id="ShowToolWindowId" priority="0x0101" type="Button">
+      <Button guid="guidKnownMonikersPackage" id="ShowToolWindowId" priority="0x0101" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="ImageCatalogGuid" id="Image"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -19,9 +19,7 @@
   </Commands>
 
   <Symbols>
-    <GuidSymbol name="guidKnownMonikersPackage" value="{4256ca61-2162-4ca2-8d10-4c6a2794521c}" />
-
-    <GuidSymbol name="guidKnownMonikersPackageCmdSet" value="{4d079c3e-e2dc-4421-9b0d-f243cfb1591a}">
+    <GuidSymbol name="guidKnownMonikersPackage" value="{4256ca61-2162-4ca2-8d10-4c6a2794521c}">
       <IDSymbol name="ShowToolWindowId" value="0x0100" />
     </GuidSymbol>
   </Symbols>
