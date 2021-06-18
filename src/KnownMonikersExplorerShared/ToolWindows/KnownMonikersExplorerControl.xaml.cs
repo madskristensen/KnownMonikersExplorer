@@ -84,9 +84,7 @@ namespace KnownMonikersExplorer.ToolWindows
             var model = (KnownMonikersViewModel)list.SelectedItem;
             var export = new ExportMonikerWindow(model, _state.DTE);
 
-            var hwnd = new IntPtr(_state.DTE.MainWindow.HWnd);
-            var window = (Window)HwndSource.FromHwnd(hwnd).RootVisual;
-            export.Owner = window;
+            export.Owner = Application.Current.MainWindow;
 
             export.ShowDialog();
         }
