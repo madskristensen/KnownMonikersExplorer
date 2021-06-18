@@ -4,11 +4,12 @@
   <Extern href="stdidcmd.h"/>
   <Extern href="vsshlids.h"/>
   <Include href="KnownImageIds.vsct"/>
+  <Include href="VSGlobals.vsct"/>
 
   <Commands package="guidKnownMonikersPackage">
     <Buttons>
       <Button guid="guidKnownMonikersPackage" id="ShowToolWindowId" priority="0x0101" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Parent guid="VSMainMenu" id="View.DevWindowsGroup.OtherWindows.Group2"/>
         <Icon guid="ImageCatalogGuid" id="Image"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
