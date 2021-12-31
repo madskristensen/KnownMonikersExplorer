@@ -82,7 +82,7 @@ namespace KnownMonikersExplorer.ToolWindows
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 
             var model = (KnownMonikersViewModel)list.SelectedItem;
-            var export = new ExportMonikerWindow(model, _state.DTE);
+            var export = new ExportMonikerWindow(model);
 
             export.Owner = Application.Current.MainWindow;
 

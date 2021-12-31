@@ -103,9 +103,8 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
-      <Version>16.0.75.103</Version>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="Community.VisualStudio.Toolkit.16">
+      <Version>16.0.355</Version>
     </PackageReference>
     <PackageReference Include="Community.VisualStudio.VSCT">
       <Version>16.0.29.6</Version>
