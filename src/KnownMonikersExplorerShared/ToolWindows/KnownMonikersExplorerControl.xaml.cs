@@ -7,6 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using KnownMonikersExplorer.Windows;
 
 namespace KnownMonikersExplorer.ToolWindows
 {

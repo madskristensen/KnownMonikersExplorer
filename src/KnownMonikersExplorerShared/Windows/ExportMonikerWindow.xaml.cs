@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Community.VisualStudio.Toolkit;
+using KnownMonikersExplorer.ToolWindows;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
 
-namespace KnownMonikersExplorer.ToolWindows
+namespace KnownMonikersExplorer.Windows
 {
     public partial class ExportMonikerWindow : Window
     {

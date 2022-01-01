@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ShowToolWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KnownMonikersPackage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ToolWindows\ExportMonikerWindow.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\ExportMonikerWindow.xaml.cs">
       <DependentUpon>ExportMonikerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindows\KnownMonikersExplorerControl.xaml.cs">
@@ -21,7 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindows\KnownMonikersViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)ToolWindows\ExportMonikerWindow.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)Windows\ExportMonikerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
