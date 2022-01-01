@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,7 +25,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
             var state = new ServicesDTO
             {
-                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null)))
+                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList()
             };
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -45,6 +45,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
     public class ServicesDTO
     {
-        public IEnumerable<KnownMonikersViewModel> Monikers { get; set; }
+        public IReadOnlyList<KnownMonikersViewModel> Monikers { get; set; }
     }
 }

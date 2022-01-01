@@ -17,10 +17,10 @@ namespace KnownMonikersExplorer
     {
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            KnownMonikersExplorerWindow.Initialize(this);
+            this.RegisterToolWindows();
 
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            await ShowToolWindow.InitializeAsync(this);
+            await this.RegisterCommandsAsync();
         }
     }
 }

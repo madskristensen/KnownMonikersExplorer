@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using KnownMonikersExplorer.Windows;
+using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -104,6 +105,18 @@ namespace KnownMonikersExplorer.ToolWindows
             {
                 e.Handled = true;
             }
+        }
+
+        internal bool SelectMoniker(ImageMoniker moniker)
+        {
+            KnownMonikersViewModel match = _state.Monikers.FirstOrDefault((x) => x.Moniker.Equals(moniker));
+            if (match != null)
+            {
+                list.SelectedItem = match;
+                list.ScrollIntoView(match);
+                return true;
+            }
+            return false;
         }
     }
 

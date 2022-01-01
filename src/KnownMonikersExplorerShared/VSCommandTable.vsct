@@ -14,14 +14,33 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>KnownMonikers Explorer</ButtonText>
+          <LocCanonicalName>.KnownMonikerExplorer.OpenToolWindow</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidKnownMonikersPackage" id="FindMoniker" priority="0x0001">
+        <Icon guid="ImageCatalogGuid" id="ColorPicker"/>
+        <!-- 
+        This command relies on the mouse position, so having this command appear in a
+        menu would be pointless since the mouse would always be over that menu item.
+        -->
+        <CommandFlag>CommandWellOnly</CommandFlag>
+        <Strings>
+          <ButtonText>Find Image Moniker</ButtonText>
+          <LocCanonicalName>.KnownMonikerExplorer.FindMoniker</LocCanonicalName>
         </Strings>
       </Button>
     </Buttons>
   </Commands>
 
+  <KeyBindings>
+    <KeyBinding guid="guidKnownMonikersPackage" id="FindMoniker" editor="guidVSStd97" mod1="Control Alt Shift" key1="Q"/>
+  </KeyBindings>
+
   <Symbols>
     <GuidSymbol name="guidKnownMonikersPackage" value="{4256ca61-2162-4ca2-8d10-4c6a2794521c}">
       <IDSymbol name="ShowToolWindowId" value="0x0100" />
+      <IDSymbol name="FindMoniker" value="0x0101" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
