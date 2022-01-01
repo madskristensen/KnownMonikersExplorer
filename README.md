@@ -2,7 +2,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/85xmotii0u1n5rtd?svg=true)](https://ci.appveyor.com/project/madskristensen/knownmonikersexplorer)
 
-**Requires Visual Studio 2017.6 or newer**
+**Requires Visual Studio 2019 or newer**
 
 Provides a tool window for Visual Studio extension authors that lets you easily browse all the image monikers in the **KnownMonikers** catalog.
 
@@ -30,6 +30,12 @@ Hitting the **Enter** key will also show the export dialog.
 
 ## Copy to clipboard
 This will copy the name of the moniker to the clipboard. You can also use **Ctrl+C** to do the same.
+
+## Find a moniker used in Visual Studio
+
+Hover the mouse over an image moniker in Visual Studio (for example, an image on a toolbar button) and press **Ctrl+Shift+Alt+Q**. The KnownMonikers Explorer window will open and highlight the image moniker.
+
+![Find Moniker](art/find-moniker.gif)
 
 ## Related resources
 
