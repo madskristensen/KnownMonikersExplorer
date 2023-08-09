@@ -1,24 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using EnvDTE80;
+using Community.VisualStudio.Toolkit;
+using KnownMonikersExplorer.ToolWindows;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
+using Task = System.Threading.Tasks.Task;
 
-namespace KnownMonikersExplorer.ToolWindows
+namespace KnownMonikersExplorer.Windows
 {
     public partial class ExportMonikerWindow : Window
     {
         private static KnownMonikersViewModel _model;
-        private static DTE2 _dte;
 
-        public ExportMonikerWindow(KnownMonikersViewModel model, DTE2 dte)
+        public ExportMonikerWindow(KnownMonikersViewModel model)
         {
             _model = model;
-            _dte = dte;
             InitializeComponent();
 
             Loaded += OnLoaded;
@@ -46,7 +47,7 @@ namespace KnownMonikersExplorer.ToolWindows
                     BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size);
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                    var saved = SaveImage(image, _model.Name);
+                    var saved = await SaveImageAsync(image, _model.Name);
 
                     if (saved)
                     {
@@ -61,9 +62,9 @@ namespace KnownMonikersExplorer.ToolWindows
             }
         }
 
-        private bool SaveImage(BitmapSource image, string name)
+        private async Task<bool> SaveImageAsync(BitmapSource image, string name)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             var sfd = new SaveFileDialog
             {
@@ -76,7 +77,7 @@ namespace KnownMonikersExplorer.ToolWindows
             if (sfd.ShowDialog() == true)
             {
                 SaveBitmapToDisk(image, sfd.FileName);
-                OptimizeImage(sfd.FileName);
+                await OptimizeImageAsync(sfd.FileName);
                 return true;
             }
 
@@ -100,18 +101,13 @@ namespace KnownMonikersExplorer.ToolWindows
             }
         }
 
-        private static void OptimizeImage(string fileName)
+        private static async Task OptimizeImageAsync(string fileName)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             try
             {
-                EnvDTE.Command cmd = _dte.Commands.Item("ImageOptimizer.OptimizeLossless");
-
-                if (cmd != null && cmd.IsAvailable)
-                {
-                    _dte.Commands.Raise(cmd.Guid, cmd.ID, fileName, null);
-                }
+                await VS.Commands.ExecuteAsync("ImageOptimizer.OptimizeLossless", fileName);
             }
             catch (Exception ex)
             {

@@ -21,5 +21,6 @@ namespace KnownMonikersExplorer
     internal sealed partial class PackageIds
     {
         public const int ShowToolWindowId = 0x0100;
+        public const int FindMoniker = 0x0101;
     }
 }

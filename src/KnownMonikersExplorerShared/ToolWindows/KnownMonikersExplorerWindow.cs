@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Community.VisualStudio.Toolkit;
-using EnvDTE80;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -26,8 +25,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
             var state = new ServicesDTO
             {
-                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))),
-                DTE = await VS.GetDTEAsync()
+                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList()
             };
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -47,7 +45,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
     public class ServicesDTO
     {
-        public DTE2 DTE { get; set; }
-        public IEnumerable<KnownMonikersViewModel> Monikers { get; set; }
+        public IReadOnlyList<KnownMonikersViewModel> Monikers { get; set; }
     }
 }
