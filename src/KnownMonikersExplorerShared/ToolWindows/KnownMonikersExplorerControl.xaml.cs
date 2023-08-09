@@ -45,7 +45,7 @@ namespace KnownMonikersExplorer.ToolWindows
             }
             else if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                Copy_Click(this, new RoutedEventArgs());
+                CopyName_Click(this, new RoutedEventArgs());
             }
         }
 
@@ -89,10 +89,16 @@ namespace KnownMonikersExplorer.ToolWindows
             export.ShowDialog();
         }
 
-        private void Copy_Click(object sender, RoutedEventArgs e)
+        private void CopyName_Click(object sender, RoutedEventArgs e)
         {
             var model = (KnownMonikersViewModel)list.SelectedItem;
             Clipboard.SetText(model.Name);
+        }
+
+        private void CopyGuidAndId_Click(object sender, RoutedEventArgs e)
+        {
+            var model = (KnownMonikersViewModel)list.SelectedItem;
+            Clipboard.SetText($"{model.Moniker.Guid}, {model.Moniker.Id}");
         }
 
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e)

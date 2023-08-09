@@ -52,7 +52,17 @@
                                 <MenuItem Header="Copy Name to Clipboard">
                                     <MenuItem.Style>
                                         <Style TargetType="MenuItem">
-                                            <EventSetter Event="Click" Handler="Copy_Click"/>
+                                            <EventSetter Event="Click" Handler="CopyName_Click"/>
+                                        </Style>
+                                    </MenuItem.Style>
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Copy}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Copy GUID &amp; ID to Clipboard">
+                                    <MenuItem.Style>
+                                        <Style TargetType="MenuItem">
+                                            <EventSetter Event="Click" Handler="CopyGuidAndId_Click"/>
                                         </Style>
                                     </MenuItem.Style>
                                     <MenuItem.Icon>
