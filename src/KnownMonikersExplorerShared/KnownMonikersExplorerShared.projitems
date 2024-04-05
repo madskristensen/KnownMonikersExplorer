@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\FindMoniker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ShowToolWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KnownMonikersPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)toolwindows\MonikerKeywords.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ExportMonikerWindow.xaml.cs">
       <DependentUpon>ExportMonikerWindow.xaml</DependentUpon>
     </Compile>

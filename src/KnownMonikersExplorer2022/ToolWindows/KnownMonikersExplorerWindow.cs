@@ -25,7 +25,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
             var state = new ServicesDTO
             {
-                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null), null)).ToList()
+                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList()
             };
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
