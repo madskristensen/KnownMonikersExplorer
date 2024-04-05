@@ -59,7 +59,7 @@ namespace KnownMonikersExplorer.ToolWindows
                 return true;
             }
 
-            return (item as KnownMonikersViewModel).MatchSearchTerm(txtFilter.Text);
+            return (item as KnownMonikersViewModel).MatchSearchTerm(txtFilter.Text.Trim());
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)

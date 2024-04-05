@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace KnownMonikersExplorer.ToolWindows
@@ -23,7 +22,10 @@ namespace KnownMonikersExplorer.ToolWindows
 
         public bool MatchSearchTerm(string searchTerm)
         {
-            return Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 || Filters.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
+            return Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+                   || Filters.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+                   || (int.TryParse(searchTerm, out int id) && id == Moniker.Id)
+                   || (Guid.TryParse(searchTerm, out Guid guid) && guid == Moniker.Guid);
         }
     }
 }
