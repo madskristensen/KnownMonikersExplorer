@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Community.VisualStudio.Toolkit;
+using KnownMonikersExplorer.Xaml;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -21,11 +22,12 @@ namespace KnownMonikersExplorer.ToolWindows
 
         public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken)
         {
+            var xamlProvider = new XamlProvider();
             PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
 
             var state = new ServicesDTO
             {
-                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList()
+                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null), xamlProvider)).ToList()
             };
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
