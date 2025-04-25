@@ -1,20 +1,25 @@
 ﻿using System;
+using KnownMonikersExplorer.Xaml;
 using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
     public class KnownMonikersViewModel
     {
-        public KnownMonikersViewModel(string name, ImageMoniker moniker)
+        private readonly IXamlProvider _xamlProvider;
+
+        public KnownMonikersViewModel(string name, ImageMoniker moniker, IXamlProvider xamlProvider)
         {
             Name = name;
             Moniker = moniker;
-
+            _xamlProvider = xamlProvider;
             if (MonikerKeywords.Keywords.TryGetValue(name, out var filters))
             {
                 Filters = filters;
             }
         }
+
+        public string GetXaml() => _xamlProvider.GetXaml(Moniker);
 
         public string Name { get; set; }
         public ImageMoniker Moniker { get; set; }
