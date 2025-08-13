@@ -46,8 +46,9 @@ namespace KnownMonikersExplorer.Windows
                 {
                     BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size);
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    var xaml = _model.GetXaml();
 
-                    var saved = await SaveImageAsync(image, _model.Name);
+                    var saved = await SaveImageAsync(image, _model.Name, xaml);
 
                     if (saved)
                     {
@@ -62,7 +63,7 @@ namespace KnownMonikersExplorer.Windows
             }
         }
 
-        private async Task<bool> SaveImageAsync(BitmapSource image, string name)
+        private async Task<bool> SaveImageAsync(BitmapSource image, string name, string xaml)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -74,17 +75,30 @@ namespace KnownMonikersExplorer.Windows
                 Title = Title,
             };
 
+            if (!String.IsNullOrEmpty(xaml))
+            {
+                sfd.Filter += "|Xaml|*.xaml";
+            }
+
             if (sfd.ShowDialog() == true)
             {
-                SaveBitmapToDisk(image, sfd.FileName);
-                await OptimizeImageAsync(sfd.FileName);
+                EnsureDirectory(sfd.FileName);
+                if (Path.GetExtension(sfd.FileName) == ".xaml")
+                {
+                    File.WriteAllText(sfd.FileName, xaml);
+                }
+                else
+                {
+                    SaveBitmapToDisk(image, sfd.FileName);
+                    await OptimizeImageAsync(sfd.FileName);
+                }
                 return true;
             }
 
             return false;
         }
 
-        private static void SaveBitmapToDisk(BitmapSource image, string fileName)
+        private static void EnsureDirectory(string fileName)
         {
             var fileParentPath = Path.GetDirectoryName(fileName);
 
@@ -92,7 +106,10 @@ namespace KnownMonikersExplorer.Windows
             {
                 Directory.CreateDirectory(fileParentPath);
             }
+        }
 
+        private static void SaveBitmapToDisk(BitmapSource image, string fileName)
+        {
             using (var fileStream = new FileStream(fileName, FileMode.Create))
             {
                 BitmapEncoder encoder = GetEncoder(fileName);
