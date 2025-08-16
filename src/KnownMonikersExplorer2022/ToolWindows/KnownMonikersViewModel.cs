@@ -14,16 +14,29 @@ namespace KnownMonikersExplorer.ToolWindows
             {
                 Filters = filters;
             }
+
+            // Precompute lowercase strings to avoid repeated allocations/comparisons
+            _nameLower = Name.ToLowerInvariant();
+            _filtersLower = Filters?.ToLowerInvariant() ?? string.Empty;
         }
 
         public string Name { get; set; }
         public ImageMoniker Moniker { get; set; }
         public string Filters { get; set; } = "";
 
+        private readonly string _nameLower;
+        private readonly string _filtersLower;
+
         public bool MatchSearchTerm(string searchTerm)
         {
-            return Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
-                   || Filters.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                return true;
+            }
+
+            // Expect caller to pass pre-lowered searchTerm when doing bulk filtering
+            return _nameLower.IndexOf(searchTerm, StringComparison.Ordinal) >= 0
+                   || _filtersLower.IndexOf(searchTerm, StringComparison.Ordinal) >= 0
                    || (int.TryParse(searchTerm, out int id) && id == Moniker.Id)
                    || (Guid.TryParse(searchTerm, out Guid guid) && guid == Moniker.Guid);
         }

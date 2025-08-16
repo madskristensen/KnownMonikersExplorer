@@ -21,15 +21,12 @@ namespace KnownMonikersExplorer.ToolWindows
 
         public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken)
         {
-            PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
+            var state = new ServicesDTO();
 
-            var state = new ServicesDTO
-            {
-                Monikers = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList()
-            };
+            // Kick off background population without blocking UI thread
+            _ = Task.Run(() => state.PopulateAsync(), cancellationToken);
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
-
             return new KnownMonikersExplorerControl(state);
         }
 
@@ -45,6 +42,33 @@ namespace KnownMonikersExplorer.ToolWindows
 
     public class ServicesDTO
     {
-        public IReadOnlyList<KnownMonikersViewModel> Monikers { get; set; }
+        private IReadOnlyList<KnownMonikersViewModel> _monikers = Array.Empty<KnownMonikersViewModel>();
+        private int _populated; // 0 = no, 1 = yes
+        private readonly object _lock = new object();
+
+        public IReadOnlyList<KnownMonikersViewModel> Monikers
+        {
+            get
+            {
+                return _monikers;
+            }
+            private set => _monikers = value;
+        }
+
+        public async Task PopulateAsync()
+        {
+            if (Interlocked.CompareExchange(ref _populated, 1, 0) != 0)
+            {
+                return; // already populated
+            }
+
+            PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
+            var list = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList();
+
+            lock (_lock)
+            {
+                Monikers = list;
+            }
+        }
     }
 }

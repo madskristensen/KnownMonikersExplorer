@@ -15,50 +15,52 @@ namespace KnownMonikersExplorer.Windows
 {
     public partial class ExportMonikerWindow : Window
     {
-        private static KnownMonikersViewModel _model;
+        private readonly KnownMonikersViewModel _model;
 
         public ExportMonikerWindow(KnownMonikersViewModel model)
         {
             _model = model;
             InitializeComponent();
-
-            Loaded += OnLoaded;
+            Loaded += OnLoadedAsync;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void OnLoadedAsync(object sender, RoutedEventArgs e)
         {
-            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            try
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                Icon = await KnownMonikers.Export.ToBitmapSourceAsync(16);
+                Icon = await ImageMonikerBitmapCache.GetBitmapAsync(KnownMonikers.Export, 16);
                 imgMoniker.Moniker = _model.Moniker;
-
                 txtSize.Focus();
-            });
+            }
+            catch (Exception ex)
+            {
+                ex.Log();
+            }
         }
 
-        private void BtnOk_Click(object sender, RoutedEventArgs e)
+        private async void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(txtSize.Text, out var size))
-            {
-                ThreadHelper.JoinableTaskFactory.Run(async delegate
-                {
-                    BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size);
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                    var saved = await SaveImageAsync(image, _model.Name);
-
-                    if (saved)
-                    {
-                        Close();
-                    }
-                });
-            }
-            else
+            if (!int.TryParse(txtSize.Text, out var size))
             {
                 txtSize.Focus();
                 txtSize.SelectAll();
+                return;
+            }
+
+            try
+            {
+                BitmapSource image = await ImageMonikerBitmapCache.GetBitmapAsync(_model.Moniker, size);
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var saved = await SaveImageAsync(image, _model.Name);
+                if (saved)
+                {
+                    Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Log();
             }
         }
 

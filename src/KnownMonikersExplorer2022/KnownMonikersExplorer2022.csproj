@@ -65,6 +65,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VSCommandTable.vsct</DependentUpon>
     </Compile>
+    <Compile Include="ToolWindows\ImageMonikerBitmapCache.cs" />
     <Compile Include="ToolWindows\KnownMonikersExplorerControl.xaml.cs">
       <DependentUpon>KnownMonikersExplorerControl.xaml</DependentUpon>
     </Compile>
