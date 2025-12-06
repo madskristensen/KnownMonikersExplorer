@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="KnownMonikersExplorer.ToolWindows.KnownMonikersExplorerControl"
+<UserControl x:Class="KnownMonikersExplorer.ToolWindows.KnownMonikersExplorerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,10 +9,12 @@
              xmlns:util="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:toolkit="clr-namespace:Community.VisualStudio.Toolkit;assembly=Community.VisualStudio.Toolkit"
+             xmlns:shell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              mc:Ignorable="d"
              toolkit:Themes.UseVsTheme="True"
+             Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
              d:DesignHeight="450" d:DesignWidth="400" UseLayoutRounding="True">
-    <Grid>
+    <Grid Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -24,7 +26,7 @@
                   SelectionMode="Single"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   VirtualizingPanel.VirtualizationMode="Recycling"
-                  theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}"
+                  Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
                   MouseDoubleClick="List_MouseDoubleClick">
 
             <ListView.Resources>
