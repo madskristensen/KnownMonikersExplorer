@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,8 +16,6 @@ namespace KnownMonikersExplorer.ToolWindows
     {
         private readonly ServicesDTO _state;
         private readonly ObservableCollection<KnownMonikersViewModel> _filtered = new ObservableCollection<KnownMonikersViewModel>();
-        private CancellationTokenSource _filterCts;
-        private string _lastFilter = string.Empty;
 
         public KnownMonikersExplorerControl(ServicesDTO state)
         {
@@ -30,24 +27,18 @@ namespace KnownMonikersExplorer.ToolWindows
 
         public IEnumerable<KnownMonikersViewModel> Monikers => _filtered;
 
+        /// <summary>
+        /// Gets all monikers for search filtering.
+        /// </summary>
+        public IReadOnlyList<KnownMonikersViewModel> AllMonikers => _state.Monikers;
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Loaded -= OnLoaded;
             list.KeyUp += List_KeyUp;
             list.MouseDoubleClick += Export_Click;
-            txtFilter.KeyDown += TxtFilter_KeyDown;
-            _ = txtFilter.Focus();
             // Initial population once background load done
             _ = Task.Run(WaitAndBindInitialAsync);
-        }
-
-        private void TxtFilter_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape && !string.IsNullOrEmpty(txtFilter.Text))
-            {
-                txtFilter.Clear();
-                e.Handled = true;
-            }
         }
 
         private async Task WaitAndBindInitialAsync()
@@ -59,61 +50,27 @@ namespace KnownMonikersExplorer.ToolWindows
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            ApplyFilterCore(string.Empty, _state.Monikers); // show all
+            ApplyFilter(_state.Monikers); // show all
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        /// <summary>
+        /// Applies the filtered results from the native tool window search.
+        /// </summary>
+        public void ApplyFilter(IEnumerable<KnownMonikersViewModel> items)
         {
-            var text = ((TextBox)sender).Text.Trim();
-            QueueFilter(text);
-        }
-
-        private void QueueFilter(string text)
-        {
-            // Debounce + cancel previous
-            _filterCts?.Cancel();
-            _filterCts = new CancellationTokenSource();
-            CancellationToken token = _filterCts.Token;
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await Task.Delay(180, token); // debounce
-                    if (token.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
-                    var lowered = text.ToLowerInvariant();
-                    // If user is adding characters and previous filter was a prefix, incremental filtering
-                    IEnumerable<KnownMonikersViewModel> source = _state.Monikers;
-                    if (!string.IsNullOrEmpty(_lastFilter) && lowered.StartsWith(_lastFilter) && _filtered.Count > 0)
-                    {
-                        source = _filtered.ToList(); // snapshot current subset
-                    }
-
-                    IEnumerable<KnownMonikersViewModel> results = string.IsNullOrEmpty(lowered)
-                        ? source
-                        : source.Where(m => m.MatchSearchTerm(lowered)).ToList();
-
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(token);
-                    if (!token.IsCancellationRequested)
-                    {
-                        ApplyFilterCore(lowered, results);
-                    }
-                }
-                catch (TaskCanceledException) { }
-            }, token);
-        }
-
-        private void ApplyFilterCore(string loweredFilter, IEnumerable<KnownMonikersViewModel> items)
-        {
-            _lastFilter = loweredFilter;
             _filtered.Clear();
             foreach (KnownMonikersViewModel vm in items)
             {
                 _filtered.Add(vm);
             }
+        }
+
+        /// <summary>
+        /// Clears the filter and shows all monikers.
+        /// </summary>
+        public void ClearFilter()
+        {
+            ApplyFilter(_state.Monikers);
         }
 
         private void List_KeyUp(object sender, KeyEventArgs e)
