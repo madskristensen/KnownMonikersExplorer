@@ -66,14 +66,18 @@ jobs:
         id: find_vsix
         shell: pwsh
         run: |
-          $vsixFile = Get-ChildItem -Path . -Filter *.vsix -Recurse | Select-Object -First 1
-          if ($vsixFile) {
-            "vsix-path=$($vsixFile.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            Write-Host "Found VSIX at: $($vsixFile.FullName)"
-          } else {
+          $vsixFiles = Get-ChildItem -Path . -Filter *.vsix -Recurse
+          if ($vsixFiles.Count -eq 0) {
             Write-Error "No VSIX file found"
             exit 1
           }
+          if ($vsixFiles.Count -gt 1) {
+            Write-Error "Multiple VSIX files found: $($vsixFiles.FullName -join ', ')"
+            exit 1
+          }
+          $vsixFile = $vsixFiles[0]
+          "vsix-path=$($vsixFile.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Found VSIX at: $($vsixFile.FullName)"
 
       - name: Upload to Open VSIX
         uses: timheuer/openvsixpublish@v1
