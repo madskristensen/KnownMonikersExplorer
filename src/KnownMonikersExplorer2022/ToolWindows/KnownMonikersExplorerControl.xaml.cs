@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,15 +13,18 @@ using Microsoft.VisualStudio.Shell;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
-    public partial class KnownMonikersExplorerControl : UserControl
+    public partial class KnownMonikersExplorerControl : UserControl, INotifyPropertyChanged
     {
         private readonly ServicesDTO _state;
-        private readonly ObservableCollection<KnownMonikersViewModel> _filtered = new ObservableCollection<KnownMonikersViewModel>();
+        private IReadOnlyList<KnownMonikersViewModel> _filtered;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public KnownMonikersExplorerControl(ServicesDTO state)
         {
             Loaded += OnLoaded;
             _state = state;
+            _filtered = Array.Empty<KnownMonikersViewModel>();
             DataContext = this;
             InitializeComponent();
         }
@@ -56,13 +60,10 @@ namespace KnownMonikersExplorer.ToolWindows
         /// <summary>
         /// Applies the filtered results from the native tool window search.
         /// </summary>
-        public void ApplyFilter(IEnumerable<KnownMonikersViewModel> items)
+        public void ApplyFilter(IReadOnlyList<KnownMonikersViewModel> items)
         {
-            _filtered.Clear();
-            foreach (KnownMonikersViewModel vm in items)
-            {
-                _filtered.Add(vm);
-            }
+            _filtered = items;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Monikers)));
         }
 
         /// <summary>

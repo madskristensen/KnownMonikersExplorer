@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -144,7 +144,7 @@ namespace KnownMonikersExplorer
 
             while (true)
             {
-                ErrorHandler.ThrowOnFailure(windowEnumerator.Next(1, frame, out uint fetched));
+                ErrorHandler.ThrowOnFailure(windowEnumerator.Next(1, frame, out var fetched));
                 if (fetched == 1)
                 {
                     if (TryGetContentFromToolWindow(frame[0], out UIElement content))
@@ -168,7 +168,7 @@ namespace KnownMonikersExplorer
             PropertyInfo viewProperty = frame.GetType().GetProperty("RootView");
             if (viewProperty != null)
             {
-                object view = viewProperty.GetValue(frame);
+                var view = viewProperty.GetValue(frame);
                 PropertyInfo contentProperty = view.GetType().GetProperty("Content");
                 if (contentProperty != null)
                 {

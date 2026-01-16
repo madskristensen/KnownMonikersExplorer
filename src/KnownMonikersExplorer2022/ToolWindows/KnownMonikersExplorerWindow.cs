@@ -37,6 +37,10 @@ namespace KnownMonikersExplorer.ToolWindows
         [Guid("cfff3162-9c8d-4244-b0a7-e3b39a968b24")]
         public class Pane : ToolWindowPane
         {
+            private const int _debounceDelayMs = 500;
+            private CancellationTokenSource _debounceCts;
+            private readonly object _debounceLock = new object();
+
             public Pane()
             {
                 BitmapImageMoniker = KnownMonikers.Image;
@@ -51,11 +55,25 @@ namespace KnownMonikersExplorer.ToolWindows
                     return null;
                 }
 
-                return new KnownMonikersSearchTask(dwCookie, pSearchQuery, pSearchCallback, this);
+                // Cancel any pending debounced search
+                CancellationToken ct;
+                lock (_debounceLock)
+                {
+                    _debounceCts?.Cancel();
+                    _debounceCts = new CancellationTokenSource();
+                    ct = _debounceCts.Token;
+                }
+
+                return new KnownMonikersSearchTask(dwCookie, pSearchQuery, pSearchCallback, this, ct, _debounceDelayMs);
             }
 
             public override void ClearSearch()
             {
+                lock (_debounceLock)
+                {
+                    _debounceCts?.Cancel();
+                }
+
                 if (Content is KnownMonikersExplorerControl control)
                 {
                     control.ClearFilter();
@@ -73,37 +91,74 @@ namespace KnownMonikersExplorer.ToolWindows
         internal class KnownMonikersSearchTask : VsSearchTask
         {
             private readonly Pane _toolWindow;
+            private readonly CancellationToken _debounceCt;
+            private readonly int _debounceDelayMs;
 
-            public KnownMonikersSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, Pane toolWindow)
+            public KnownMonikersSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, Pane toolWindow, CancellationToken debounceCt, int debounceDelayMs)
                 : base(dwCookie, pSearchQuery, pSearchCallback)
             {
                 _toolWindow = toolWindow;
+                _debounceCt = debounceCt;
+                _debounceDelayMs = debounceDelayMs;
             }
 
             protected override void OnStartSearch()
             {
+                // Fire-and-forget the debounced search
+                _ = PerformDebouncedSearchAsync();
+                base.OnStartSearch();
+            }
+
+            private async Task PerformDebouncedSearchAsync()
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_debounceCt);
+                try
+                {
+                    // Wait for debounce period; if cancelled, another keystroke arrived
+                    await Task.Delay(_debounceDelayMs, _debounceCt);
+                }
+                catch (OperationCanceledException)
+                {
+                    return; // Newer search superseded this one
+                }
+
                 ErrorCode = VSConstants.S_OK;
                 uint resultCount = 0;
 
                 try
                 {
-                    string searchString = SearchQuery.SearchString?.Trim().ToLowerInvariant() ?? string.Empty;
+                    var searchString = SearchQuery.SearchString?.Trim().ToLowerInvariant() ?? string.Empty;
 
                     if (_toolWindow.Content is KnownMonikersExplorerControl control)
                     {
                         IReadOnlyList<KnownMonikersViewModel> allMonikers = control.AllMonikers;
 
-                        IEnumerable<KnownMonikersViewModel> results = string.IsNullOrEmpty(searchString)
-                            ? allMonikers
-                            : allMonikers.Where(m => m.MatchSearchTerm(searchString));
+                        // When showing all, reuse the existing list to avoid allocation
+                        IReadOnlyList<KnownMonikersViewModel> resultsList;
+                        if (string.IsNullOrEmpty(searchString))
+                        {
+                            resultsList = allMonikers;
+                        }
+                        else
+                        {
+                            // Only allocate a new list when filtering is actually needed
+                            var filtered = new List<KnownMonikersViewModel>();
+                            for (var i = 0; i < allMonikers.Count; i++)
+                            {
+                                KnownMonikersViewModel m = allMonikers[i];
+                                if (m.MatchSearchTerm(searchString))
+                                {
+                                    filtered.Add(m);
+                                }
+                            }
+                            resultsList = filtered;
+                        }
 
-                        var resultsList = results.ToList();
+
                         resultCount = (uint)resultsList.Count;
 
-                        ThreadHelper.Generic.Invoke(() =>
-                        {
-                            control.ApplyFilter(resultsList);
-                        });
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        control.ApplyFilter(resultsList);
                     }
                 }
                 catch (Exception)
@@ -114,8 +169,6 @@ namespace KnownMonikersExplorer.ToolWindows
                 {
                     SearchResults = resultCount;
                 }
-
-                base.OnStartSearch();
             }
 
             protected override void OnStopSearch()

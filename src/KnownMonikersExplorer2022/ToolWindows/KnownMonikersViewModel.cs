@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace KnownMonikersExplorer.ToolWindows
@@ -37,7 +37,7 @@ namespace KnownMonikersExplorer.ToolWindows
             // Expect caller to pass pre-lowered searchTerm when doing bulk filtering
             return _nameLower.IndexOf(searchTerm, StringComparison.Ordinal) >= 0
                    || _filtersLower.IndexOf(searchTerm, StringComparison.Ordinal) >= 0
-                   || (int.TryParse(searchTerm, out int id) && id == Moniker.Id)
+                   || (int.TryParse(searchTerm, out var id) && id == Moniker.Id)
                    || (Guid.TryParse(searchTerm, out Guid guid) && guid == Moniker.Guid);
         }
     }
