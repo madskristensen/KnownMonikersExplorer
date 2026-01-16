@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "coding" ],
+  "identity": {
+    "internalName": "KnownMonikersExplorer",
+    "tags": [ "vsix", "knownmonikers", "image" ]
+  },
+  "assetFiles": [
+    {
+      "pathOnDisk": "art/toolwindow.png",
+      "targetPath": "art/toolwindow-png"
+    },
+    {
+      "pathOnDisk": "art/context-menu.png",
+      "targetPath": "art/context-menu-png"
+    },
+    {
+      "pathOnDisk": "art/export-dialog.png",
+      "targetPath": "art/export-dialog-png"
+    },
+    {
+      "pathOnDisk": "art/find-moniker.gif",
+      "targetPath": "art/find-moniker-gif"
+    }
+  ],
+  "overview": "README.md",
+  "publisher": "MadsKristensen",
+  "repo": "https://github.com/madskristensen/KnownMonikersExplorer"
+}
