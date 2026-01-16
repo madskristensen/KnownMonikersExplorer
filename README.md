@@ -1,4 +1,4 @@
-[marketplace]: https://marketplace.visualstudio.com/items?itemName=MadsKristensen.KnownMonikersExplorer
+[marketplace]: https://marketplace.visualstudio.com/items?itemName=MadsKristensen.KnownMonikersExplorer2022
 [vsixgallery]: http://vsixgallery.com/extension/c38f3512-4653-4d97-a4c5-860a425209f5/
 [repo]: https://github.com/madskristensen/KnownMonikersExplorer
 
