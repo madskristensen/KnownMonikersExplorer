@@ -15,7 +15,11 @@
              toolkit:Themes.UseVsTheme="True"
              Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
              Title="Export Image Moniker" Height="350" Width="270" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" UseLayoutRounding="True" WindowStyle="None" ResizeMode="NoResize" BorderBrush="DarkGray" BorderThickness="1" SizeToContent="WidthAndHeight">
-    <Grid Margin="10" Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}">
+    <Window.Resources>
+        <util:BrushToColorConverter x:Key="BrushToColorConverter"/>
+    </Window.Resources>
+    <Grid Margin="10" Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
+          theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />

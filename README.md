@@ -1,6 +1,6 @@
-[marketplace]: https://marketplace.visualstudio.com/items?itemName=MadsKristensen.KnownMonikersExplorer2022
-[vsixgallery]: http://vsixgallery.com/extension/c38f3512-4653-4d97-a4c5-860a425209f5/
-[repo]: https://github.com/madskristensen/KnownMonikersExplorer
+[marketplace]: <https://marketplace.visualstudio.com/items?itemName=MadsKristensen.KnownMonikersExplorer2022>
+[vsixgallery]: <http://vsixgallery.com/extension/c38f3512-4653-4d97-a4c5-860a425209f5/>
+[repo]: <https://github.com/madskristensen/KnownMonikersExplorer>
 
 # KnownMonikers Explorer
 
@@ -26,10 +26,10 @@ Right-click any moniker for a list of actions:
 
 ![Context Menu](art/context-menu.png)
 
-| Action | Shortcut | Description |
-|--------|----------|-------------|
-| Export | `Enter` | Export moniker to PNG, JPEG, or GIF at custom size |
-| Copy | `Ctrl+C` | Copy moniker name to clipboard |
+| Action | Shortcut | Description                                        |
+| ------ | -------- | -------------------------------------------------- |
+| Export | `Enter`  | Export moniker to PNG, JPEG, or GIF at custom size |
+| Copy   | `Ctrl+C` | Copy moniker name to clipboard                     |
 
 ### Export Dialog
 

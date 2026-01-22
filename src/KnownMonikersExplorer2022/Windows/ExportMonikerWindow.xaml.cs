@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -7,6 +7,7 @@ using Community.VisualStudio.Toolkit;
 using KnownMonikersExplorer.ToolWindows;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
@@ -50,7 +51,9 @@ namespace KnownMonikersExplorer.Windows
 
             try
             {
-                BitmapSource image = await ImageMonikerBitmapCache.GetBitmapAsync(_model.Moniker, size);
+                // Get the current theme's background color for proper image theming
+                System.Drawing.Color backgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size, backgroundColor);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var saved = await SaveImageAsync(image, _model.Name);
                 if (saved)
