@@ -22,10 +22,15 @@ namespace KnownMonikersExplorer.Windows
         {
             _model = model;
             InitializeComponent();
-            Loaded += OnLoadedAsync;
+            Loaded += OnLoaded;
         }
 
-        private async void OnLoadedAsync(object sender, RoutedEventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            OnLoadedAsync().FireAndForget();
+        }
+
+        private async Task OnLoadedAsync()
         {
             try
             {
@@ -42,10 +47,10 @@ namespace KnownMonikersExplorer.Windows
 
         private void TxtSize_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            btnOk.IsEnabled = int.TryParse(txtSize.Text, out int size) && size > 0;
+            btnOk.IsEnabled = int.TryParse(txtSize.Text, out var size) && size > 0;
         }
 
-        private async void BtnOk_Click(object sender, RoutedEventArgs e)
+        private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             if (!int.TryParse(txtSize.Text, out var size))
             {
@@ -54,6 +59,11 @@ namespace KnownMonikersExplorer.Windows
                 return;
             }
 
+            ExportAsync(size).FireAndForget();
+        }
+
+        private async Task ExportAsync(int size)
+        {
             try
             {
                 // Get the current theme's background color for proper image theming

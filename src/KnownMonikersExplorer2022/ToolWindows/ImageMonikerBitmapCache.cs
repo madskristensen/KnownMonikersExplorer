@@ -30,7 +30,11 @@ namespace KnownMonikersExplorer.ToolWindows
                 Task = CreateAsync(k.guid, k.id, k.size),
                 InsertionOrder = Interlocked.Increment(ref _insertionCounter)
             });
+
+            // Returning a cached task is intentional here for performance
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
             return entry.Task;
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
         }
 
         private static async Task<BitmapSource> CreateAsync(Guid guid, int id, int size)

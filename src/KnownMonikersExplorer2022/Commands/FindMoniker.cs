@@ -123,7 +123,7 @@ namespace KnownMonikersExplorer
             ToolWindowPane toolWindow = await KnownMonikersExplorerWindow.ShowAsync();
             var explorer = toolWindow.Content as KnownMonikersExplorerControl;
 
-            if (!explorer.SelectMoniker(moniker, out bool needsClearSearch))
+            if (!explorer.SelectMoniker(moniker, out var needsClearSearch))
             {
                 await VS.MessageBox.ShowAsync(
                     "A moniker was found, but it is not a known moniker. The image is:",
