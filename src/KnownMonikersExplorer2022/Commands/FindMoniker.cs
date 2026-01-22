@@ -118,16 +118,23 @@ namespace KnownMonikersExplorer
 
         private async Task ShowMonikerInToolWindowAsync(ImageMoniker moniker)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             ToolWindowPane toolWindow = await KnownMonikersExplorerWindow.ShowAsync();
             var explorer = toolWindow.Content as KnownMonikersExplorerControl;
 
-            if (!explorer.SelectMoniker(moniker))
+            if (!explorer.SelectMoniker(moniker, out bool needsClearSearch))
             {
                 await VS.MessageBox.ShowAsync(
                     "A moniker was found, but it is not a known moniker. The image is:",
                     line2: $"GUID: {moniker.Guid:b}{Environment.NewLine}ID: {moniker.Id}",
                     buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK
                 );
+            }
+            else if (needsClearSearch)
+            {
+                // Clear the search box text in the tool window
+                toolWindow.ClearSearch();
             }
             return;
         }

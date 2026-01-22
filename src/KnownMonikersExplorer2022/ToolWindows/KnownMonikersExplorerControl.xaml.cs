@@ -133,10 +133,32 @@ namespace KnownMonikersExplorer.ToolWindows
             }
         }
 
-        internal bool SelectMoniker(ImageMoniker moniker)
+        /// <summary>
+        /// Attempts to select the specified moniker in the list.
+        /// </summary>
+        /// <param name="moniker">The moniker to select.</param>
+        /// <param name="needsClearSearch">True if the search filter needs to be cleared (moniker was found in full list but not in filtered view).</param>
+        /// <returns>True if the moniker was found and selected, false otherwise.</returns>
+        internal bool SelectMoniker(ImageMoniker moniker, out bool needsClearSearch)
         {
-            // Search in full list if not found in filtered view
-            KnownMonikersViewModel match = _filtered.FirstOrDefault(x => x.Moniker.Equals(moniker)) ?? _state.Monikers.FirstOrDefault((x) => x.Moniker.Equals(moniker));
+            needsClearSearch = false;
+
+            // First try to find in the current filtered view
+            KnownMonikersViewModel match = _filtered.FirstOrDefault(x => x.Moniker.Equals(moniker));
+
+            if (match == null)
+            {
+                // Not found in filtered view, search the full list
+                match = _state.Monikers.FirstOrDefault(x => x.Moniker.Equals(moniker));
+                if (match != null)
+                {
+                    // Signal that the search needs to be cleared
+                    needsClearSearch = true;
+                    // Clear the filter to show all monikers so the selection is visible
+                    ClearFilter();
+                }
+            }
+
             if (match != null)
             {
                 list.SelectedItem = match;
