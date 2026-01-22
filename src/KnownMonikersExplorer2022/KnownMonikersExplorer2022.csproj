@@ -79,6 +79,9 @@
     <Compile Include="Windows\SelectImageMonikerPropertyWindow.xaml.cs">
       <DependentUpon>SelectImageMonikerPropertyWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\UnknownMonikerWindow.xaml.cs">
+      <DependentUpon>UnknownMonikerWindow.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">
@@ -140,6 +143,9 @@
     <Page Include="Windows\SelectImageMonikerPropertyWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\UnknownMonikerWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

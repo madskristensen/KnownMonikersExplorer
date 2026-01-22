@@ -125,11 +125,11 @@ namespace KnownMonikersExplorer
 
             if (!explorer.SelectMoniker(moniker, out var needsClearSearch))
             {
-                await VS.MessageBox.ShowAsync(
-                    "A moniker was found, but it is not a known moniker. The image is:",
-                    line2: $"GUID: {moniker.Guid:b}{Environment.NewLine}ID: {moniker.Id}",
-                    buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK
-                );
+                var window = new UnknownMonikerWindow(moniker)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                window.ShowDialog();
             }
             else if (needsClearSearch)
             {

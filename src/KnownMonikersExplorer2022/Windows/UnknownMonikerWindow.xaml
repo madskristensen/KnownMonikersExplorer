@@ -1,0 +1,76 @@
+<Window x:Class="KnownMonikersExplorer.Windows.UnknownMonikerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+        xmlns:theming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+        xmlns:util="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Utilities"
+        xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+        xmlns:toolkit="clr-namespace:Community.VisualStudio.Toolkit;assembly=Community.VisualStudio.Toolkit"
+        xmlns:shell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+        mc:Ignorable="d" 
+        toolkit:Themes.UseVsTheme="True"
+        Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
+        Title="Unknown Image Moniker" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" 
+        UseLayoutRounding="True" WindowStyle="None" ResizeMode="NoResize" 
+        BorderBrush="DarkGray" BorderThickness="1" SizeToContent="WidthAndHeight">
+    <Window.Resources>
+        <util:BrushToColorConverter x:Key="BrushToColorConverter"/>
+    </Window.Resources>
+    <Grid Margin="15" MinWidth="350" Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
+          theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with icon preview -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+            <imaging:CrispImage x:Name="imgMoniker" Width="32" Height="32" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBlock Text="A moniker was found, but it is not a known moniker." 
+                       VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="280"/>
+        </StackPanel>
+
+        <!-- GUID Row -->
+        <Grid Grid.Row="1" Margin="0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="GUID:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtGuid" Grid.Column="1" IsReadOnly="True" VerticalAlignment="Center" 
+                     Margin="5,0" Background="Transparent" BorderThickness="0"/>
+            <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Margin="4" Cursor="Hand"
+                                Moniker="{x:Static catalog:KnownMonikers.Copy}" 
+                                MouseLeftButtonUp="CopyGuid_Click" ToolTip="Copy GUID to clipboard"/>
+        </Grid>
+
+        <!-- ID Row -->
+        <Grid Grid.Row="2" Margin="0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="ID:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtId" Grid.Column="1" IsReadOnly="True" VerticalAlignment="Center" 
+                     Margin="5,0" Background="Transparent" BorderThickness="0"/>
+            <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Margin="4" Cursor="Hand"
+                                Moniker="{x:Static catalog:KnownMonikers.Copy}" 
+                                MouseLeftButtonUp="CopyId_Click" ToolTip="Copy ID to clipboard"/>
+        </Grid>
+
+        <!-- Copy Both Button -->
+        <Button Grid.Row="3" Content="Copy Both" Margin="0,15,0,0" HorizontalAlignment="Left" 
+                Padding="10,5" Click="CopyBoth_Click" ToolTip="Copy GUID and ID to clipboard"/>
+
+        <!-- Close Button -->
+        <Button Grid.Row="4" Content="Close" IsCancel="True" HorizontalAlignment="Right" 
+                Margin="0,15,0,0" Padding="15,5" IsDefault="True"/>
+    </Grid>
+</Window>
