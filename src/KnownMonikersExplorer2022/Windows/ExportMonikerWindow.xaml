@@ -30,13 +30,23 @@
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <Label x:Name="textBlock" Margin="0,14,2,0" Content="Width" />
-            <TextBox x:Name="txtSize" Margin="0,17,0,0" Width="50" TextChanged="TxtSize_TextChanged"/>
-            <Label x:Name="px" Content="pixels" Margin="0,14,0,0"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox x:Name="txtSize" Grid.Column="1" Width="50" VerticalAlignment="Center" TextChanged="TxtSize_TextChanged" PreviewTextInput="TxtSize_PreviewTextInput"/>
+            <TextBlock Grid.Column="2" Text="pixels" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            <CheckBox x:Name="chkDarkTheme" Grid.Column="4" Content="Dark theme" VerticalAlignment="Center" Checked="ChkDarkTheme_Changed" Unchecked="ChkDarkTheme_Changed"/>
+        </Grid>
 
-        <imaging:CrispImage x:Name="imgMoniker" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" Margin="20" VerticalAlignment="top" HorizontalAlignment="Left" Width="250" Height="250" Moniker="{x:Static catalog:KnownMonikers.MoveUp}" />
+        <Border x:Name="imgBorder" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <imaging:CrispImage x:Name="imgMoniker" Width="250" Height="250" Moniker="{x:Static catalog:KnownMonikers.MoveUp}" />
+        </Border>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0 10 0 0">
             <Grid.ColumnDefinitions>

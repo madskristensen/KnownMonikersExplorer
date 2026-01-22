@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Community.VisualStudio.Toolkit;
 using KnownMonikersExplorer.ToolWindows;
@@ -37,12 +39,51 @@ namespace KnownMonikersExplorer.Windows
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 Icon = await ImageMonikerBitmapCache.GetBitmapAsync(KnownMonikers.Export, 16);
                 imgMoniker.Moniker = _model.Moniker;
+
+                // Check if VS is currently using a dark theme
+                System.Drawing.Color currentBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                chkDarkTheme.IsChecked = IsDarkColor(currentBackground);
+                UpdatePreviewBackground();
+
                 txtSize.Focus();
             }
             catch (Exception ex)
             {
                 ex.Log();
             }
+        }
+
+        private static bool IsDarkColor(System.Drawing.Color color)
+        {
+            // Calculate perceived brightness using standard formula
+            double brightness = (0.299 * color.R + 0.587 * color.G + 0.114 * color.B) / 255;
+            return brightness < 0.5;
+        }
+
+        private System.Drawing.Color GetSelectedBackgroundColor()
+        {
+            return chkDarkTheme.IsChecked == true 
+                ? System.Drawing.Color.FromArgb(255, 37, 37, 38)  // Dark theme background
+                : System.Drawing.Color.FromArgb(255, 246, 246, 246); // Light theme background
+        }
+
+        private void ChkDarkTheme_Changed(object sender, RoutedEventArgs e)
+        {
+            UpdatePreviewBackground();
+        }
+
+        private void UpdatePreviewBackground()
+        {
+            var bgColor = GetSelectedBackgroundColor();
+            var wpfColor = System.Windows.Media.Color.FromArgb(bgColor.A, bgColor.R, bgColor.G, bgColor.B);
+            imgMoniker.SetValue(ImageThemingUtilities.ImageBackgroundColorProperty, wpfColor);
+            imgBorder.Background = new SolidColorBrush(wpfColor);
+        }
+
+        private void TxtSize_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            // Only allow numeric input
+            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
         }
 
         private void TxtSize_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -66,8 +107,8 @@ namespace KnownMonikersExplorer.Windows
         {
             try
             {
-                // Get the current theme's background color for proper image theming
-                System.Drawing.Color backgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                // Get the selected theme's background color for proper image theming
+                System.Drawing.Color backgroundColor = GetSelectedBackgroundColor();
                 BitmapSource image = await _model.Moniker.ToBitmapSourceAsync(size, backgroundColor);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var saved = await SaveImageAsync(image, _model.Name);
