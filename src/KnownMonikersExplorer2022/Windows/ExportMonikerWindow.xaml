@@ -32,7 +32,7 @@
 
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
             <Label x:Name="textBlock" Margin="0,14,2,0" Content="Width" />
-            <TextBox x:Name="txtSize" Margin="0,17,0,0" Width="50"/>
+            <TextBox x:Name="txtSize" Margin="0,17,0,0" Width="50" TextChanged="TxtSize_TextChanged"/>
             <Label x:Name="px" Content="pixels" Margin="0,14,0,0"/>
         </StackPanel>
 
@@ -46,7 +46,7 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="btnOk" Grid.Column="1" Content="Export..." IsDefault="true" Margin="0,0,10,0" HorizontalAlignment="Right" Click="BtnOk_Click" />
+            <Button x:Name="btnOk" Grid.Column="1" Content="Export..." IsDefault="true" Margin="0,0,10,0" HorizontalAlignment="Right" Click="BtnOk_Click" IsEnabled="False" />
             <Button x:Name="btnCancel" Grid.Column="3" Content="Cancel" IsCancel="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
             
         </Grid>

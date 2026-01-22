@@ -40,6 +40,11 @@ namespace KnownMonikersExplorer.Windows
             }
         }
 
+        private void TxtSize_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            btnOk.IsEnabled = int.TryParse(txtSize.Text, out int size) && size > 0;
+        }
+
         private async void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             if (!int.TryParse(txtSize.Text, out var size))
