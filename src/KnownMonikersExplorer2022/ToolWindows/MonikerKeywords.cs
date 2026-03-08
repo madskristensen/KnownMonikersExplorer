@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
     internal static class MonikerKeywords
     {
-        public static readonly IReadOnlyDictionary<string, string> Keywords = new Dictionary<string, string>()
+        private static readonly Lazy<IReadOnlyDictionary<string, string>> _keywords =
+            new Lazy<IReadOnlyDictionary<string, string>>(() => new Dictionary<string, string>()
         {
         { "Abbreviation", "Text, Short, Truncate, Ellipsis, Letter" },
         { "AboutBox", "Application, Window, Information, Letter, Number, Line" },
@@ -4072,6 +4074,8 @@ namespace KnownMonikersExplorer.ToolWindows
         { "ZoomToFit", "Magnifier, Screen, Line, Add, Plus" },
         { "ZoomToggle", "Cross" },
         { "ZoomToWidth", "Magnifier" },
-        };
+        });
+
+        public static IReadOnlyDictionary<string, string> Keywords => _keywords.Value;
     }
 }

@@ -46,7 +46,6 @@ namespace KnownMonikersExplorer.ToolWindows
         [Guid("cfff3162-9c8d-4244-b0a7-e3b39a968b24")]
         public class Pane : ToolWindowPane
         {
-            private const int _debounceDelayMs = 500;
             private CancellationTokenSource _debounceCts;
             private readonly object _debounceLock = new object();
 
@@ -73,7 +72,24 @@ namespace KnownMonikersExplorer.ToolWindows
                     ct = _debounceCts.Token;
                 }
 
-                return new KnownMonikersSearchTask(dwCookie, pSearchQuery, pSearchCallback, this, ct, _debounceDelayMs);
+                int debounceDelayMs = GetDebounceDelayMs(pSearchQuery.SearchString);
+                return new KnownMonikersSearchTask(dwCookie, pSearchQuery, pSearchCallback, this, ct, debounceDelayMs);
+            }
+
+            private static int GetDebounceDelayMs(string searchString)
+            {
+                int queryLength = searchString?.Trim().Length ?? 0;
+                switch (queryLength)
+                {
+                    case 0:
+                    case 1:
+                        return 200;
+                    case 2:
+                    case 3:
+                        return 300;
+                    default:
+                        return queryLength <= 8 ? 400 : 500;
+                }
             }
 
             public override void ClearSearch()

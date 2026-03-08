@@ -33,6 +33,8 @@
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Height" Value="24" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
@@ -74,10 +76,14 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <imaging:CrispImage MinWidth="16" MinHeight="16" Moniker="{Binding Moniker, IsAsync=True}" Margin="0,0,5,0" />
-                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <imaging:CrispImage Grid.Column="0" Width="16" Height="16" Moniker="{Binding Moniker, IsAsync=True}" Margin="0,0,5,0" />
+                        <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
