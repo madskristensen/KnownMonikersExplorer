@@ -46,7 +46,8 @@ Hover the mouse over an image moniker in Visual Studio (for example, an image on
 
 ## Requirements
 
-- Visual Studio 2022 (17.0 or later)
+- Visual Studio 2022
+- Visual Studio 2026
 
 ## Related Resources
 
