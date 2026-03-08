@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 
-public class MonikerKeywords
+namespace KnownMonikersExplorer.ToolWindows
 {
-    public static Dictionary<string, string> Keywords = new Dictionary<string, string>()
+    internal static class MonikerKeywords
     {
+        public static readonly IReadOnlyDictionary<string, string> Keywords = new Dictionary<string, string>()
+        {
         { "Abbreviation", "Text, Short, Truncate, Ellipsis, Letter" },
         { "AboutBox", "Application, Window, Information, Letter, Number, Line" },
         { "AbsolutePosition", "Text, Line, Layout" },
@@ -4070,5 +4072,6 @@ public class MonikerKeywords
         { "ZoomToFit", "Magnifier, Screen, Line, Add, Plus" },
         { "ZoomToggle", "Cross" },
         { "ZoomToWidth", "Magnifier" },
-    };
+        };
+    }
 }

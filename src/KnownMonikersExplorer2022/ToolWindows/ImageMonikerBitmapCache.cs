@@ -46,7 +46,12 @@ namespace KnownMonikersExplorer.ToolWindows
             {
                 if (bmp.CanFreeze) bmp.Freeze();
             }
-            catch { }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
 
             TrimIfNeeded();
             return bmp;

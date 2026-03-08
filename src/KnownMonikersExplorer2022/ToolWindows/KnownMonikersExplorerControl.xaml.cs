@@ -47,11 +47,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
         private async Task WaitAndBindInitialAsync()
         {
-            // Wait for background population to complete (simple polling)
-            while (_state.Monikers.Count == 0)
-            {
-                await Task.Delay(50);
-            }
+            await _state.PopulationCompleted;
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             ApplyFilter(_state.Monikers); // show all

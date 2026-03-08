@@ -5,6 +5,7 @@
 # KnownMonikers Explorer
 
 [![Build status](https://github.com/madskristensen/KnownMonikersExplorer/actions/workflows/build.yaml/badge.svg)](https://github.com/madskristensen/KnownMonikersExplorer/actions/workflows/build.yaml)
+![GitHub Sponsors](https://img.shields.io/github/sponsors/madskristensen)
 
 Download this extension from the [Visual Studio Marketplace][marketplace] or get the [CI build][vsixgallery]
 

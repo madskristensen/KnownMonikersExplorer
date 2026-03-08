@@ -28,7 +28,16 @@ namespace KnownMonikersExplorer.ToolWindows
             var state = new ServicesDTO();
 
             // Kick off background population without blocking UI thread
-            _ = Task.Run(() => state.PopulateAsync(), cancellationToken);
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await state.PopulateAsync(cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+            }, cancellationToken);
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
             return new KnownMonikersExplorerControl(state);
@@ -111,7 +120,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
             private async Task PerformDebouncedSearchAsync()
             {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_debounceCt);
                 try
                 {
                     // Wait for debounce period; if cancelled, another keystroke arrived
@@ -128,47 +136,60 @@ namespace KnownMonikersExplorer.ToolWindows
                 try
                 {
                     var searchString = SearchQuery.SearchString?.Trim().ToLowerInvariant() ?? string.Empty;
+                    KnownMonikersExplorerControl control;
+                    IReadOnlyList<KnownMonikersViewModel> allMonikers;
 
-                    if (_toolWindow.Content is KnownMonikersExplorerControl control)
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_debounceCt);
+                    control = _toolWindow.Content as KnownMonikersExplorerControl;
+
+                    if (control != null)
                     {
-                        IReadOnlyList<KnownMonikersViewModel> allMonikers = control.AllMonikers;
-
-                        // When showing all, reuse the existing list to avoid allocation
-                        IReadOnlyList<KnownMonikersViewModel> resultsList;
-                        if (string.IsNullOrEmpty(searchString))
-                        {
-                            resultsList = allMonikers;
-                        }
-                        else
-                        {
-                            // Only allocate a new list when filtering is actually needed
-                            var filtered = new List<KnownMonikersViewModel>();
-                            for (var i = 0; i < allMonikers.Count; i++)
-                            {
-                                KnownMonikersViewModel m = allMonikers[i];
-                                if (m.MatchSearchTerm(searchString))
-                                {
-                                    filtered.Add(m);
-                                }
-                            }
-                            resultsList = filtered;
-                        }
-
+                        allMonikers = control.AllMonikers;
+                        IReadOnlyList<KnownMonikersViewModel> resultsList = await Task.Run(
+                            () => BuildFilteredResults(allMonikers, searchString, _debounceCt),
+                            _debounceCt);
 
                         resultCount = (uint)resultsList.Count;
 
-                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_debounceCt);
                         control.ApplyFilter(resultsList);
                     }
                 }
-                catch (Exception)
+                catch (OperationCanceledException)
                 {
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    ex.Log();
                     ErrorCode = VSConstants.E_FAIL;
                 }
                 finally
                 {
                     SearchResults = resultCount;
                 }
+            }
+
+            private static IReadOnlyList<KnownMonikersViewModel> BuildFilteredResults(IReadOnlyList<KnownMonikersViewModel> allMonikers, string searchString, CancellationToken cancellationToken)
+            {
+                if (string.IsNullOrEmpty(searchString))
+                {
+                    return allMonikers;
+                }
+
+                var filtered = new List<KnownMonikersViewModel>();
+                for (var i = 0; i < allMonikers.Count; i++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    KnownMonikersViewModel moniker = allMonikers[i];
+                    if (moniker.MatchSearchTerm(searchString))
+                    {
+                        filtered.Add(moniker);
+                    }
+                }
+
+                return filtered;
             }
 
             protected override void OnStopSearch()
@@ -183,6 +204,9 @@ namespace KnownMonikersExplorer.ToolWindows
         private IReadOnlyList<KnownMonikersViewModel> _monikers = Array.Empty<KnownMonikersViewModel>();
         private int _populated; // 0 = no, 1 = yes
         private readonly object _lock = new object();
+        private readonly TaskCompletionSource<bool> _populationCompleted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task PopulationCompleted => _populationCompleted.Task;
 
         public IReadOnlyList<KnownMonikersViewModel> Monikers
         {
@@ -193,20 +217,44 @@ namespace KnownMonikersExplorer.ToolWindows
             private set => _monikers = value;
         }
 
-        public async Task PopulateAsync()
+        public Task PopulateAsync(CancellationToken cancellationToken = default)
         {
             if (Interlocked.CompareExchange(ref _populated, 1, 0) != 0)
             {
-                return; // already populated
+                return PopulationCompleted;
             }
 
-            PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
-            var list = properties.Select(p => new KnownMonikersViewModel(p.Name, (ImageMoniker)p.GetValue(null, null))).ToList();
-
-            lock (_lock)
+            try
             {
-                Monikers = list;
+                PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
+                var list = new List<KnownMonikersViewModel>(properties.Length);
+
+                for (var i = 0; i < properties.Length; i++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    PropertyInfo property = properties[i];
+                    list.Add(new KnownMonikersViewModel(property.Name, (ImageMoniker)property.GetValue(null, null)));
+                }
+
+                lock (_lock)
+                {
+                    Monikers = list;
+                }
+
+                _populationCompleted.TrySetResult(true);
             }
+            catch (OperationCanceledException)
+            {
+                _populationCompleted.TrySetCanceled();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _populationCompleted.TrySetException(ex);
+                throw;
+            }
+
+            return PopulationCompleted;
         }
     }
 }

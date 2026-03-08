@@ -18,6 +18,8 @@
         <ListView Name="list" Margin="5" ItemsSource="{Binding Monikers}"
                   SelectionMode="Single"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  ScrollViewer.CanContentScroll="True"
+                  VirtualizingStackPanel.IsVirtualizing="True"
                   VirtualizingPanel.VirtualizationMode="Recycling"
                   Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
                   MouseDoubleClick="List_MouseDoubleClick">
@@ -74,7 +76,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <imaging:CrispImage MinWidth="16" MinHeight="16" Moniker="{Binding Moniker, IsAsync=True}" Margin="0,0,5,0" />
-                        <Label Content="{Binding Name}" />
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
