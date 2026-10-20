@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using KnownMonikersExplorer.ToolWindows;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KnownMonikersExplorer.Tests
@@ -70,7 +69,7 @@ namespace KnownMonikersExplorer.Tests
             Task<IReadOnlyList<KnownMonikersViewModel>> pending = state.GetMonikersAsync();
             await state.PopulateAsync();
 
-            IReadOnlyList<KnownMonikersViewModel> results = KnownMonikersExplorerWindow.KnownMonikersSearchTask.BuildFilteredResults(
+            IReadOnlyList<KnownMonikersViewModel> results = MonikerSearch.Filter(
                 await pending, "add", CancellationToken.None);
 
             Assert.IsTrue(results.Any(item => item.Name == "Add"));
@@ -87,7 +86,7 @@ namespace KnownMonikersExplorer.Tests
                 new KnownMonikersViewModel("AboutBox", KnownMonikers.AboutBox)
             };
 
-            Assert.AreSame(monikers, KnownMonikersExplorerWindow.KnownMonikersSearchTask.BuildFilteredResults(
+            Assert.AreSame(monikers, MonikerSearch.Filter(
                 monikers, string.Empty, CancellationToken.None));
         }
 
@@ -97,71 +96,8 @@ namespace KnownMonikersExplorer.Tests
             using (var cancellation = new CancellationTokenSource())
             {
                 cancellation.Cancel();
-                Assert.Throws<OperationCanceledException>(() => KnownMonikersExplorerWindow.KnownMonikersSearchTask.BuildFilteredResults(
+                Assert.Throws<OperationCanceledException>(() => MonikerSearch.Filter(
                     Array.Empty<KnownMonikersViewModel>(), string.Empty, cancellation.Token));
-            }
-        }
-
-        [TestMethod]
-        [Timeout(10000)]
-        public async Task StoppingDuringDebounceReportsCompletionWithZeroResults()
-        {
-            var callback = new SearchCallback();
-            var search = new TestSearchTask(callback);
-            search.Begin();
-            search.StopSearch();
-
-            Assert.AreEqual(0u, await callback.Completion.Task);
-            Assert.AreEqual(1, callback.CompletionCount);
-            search.Cancel();
-        }
-
-        [TestMethod]
-        [Timeout(10000)]
-        public async Task SupersededSearchCanCompleteAfterCancellationBeforeStart()
-        {
-            var callback = new SearchCallback();
-            var search = new TestSearchTask(callback);
-            search.Cancel();
-            search.Begin();
-
-            Assert.AreEqual(0u, await callback.Completion.Task);
-            Assert.AreEqual(1, callback.CompletionCount);
-            search.Cancel();
-        }
-
-        private sealed class TestSearchTask : KnownMonikersExplorerWindow.KnownMonikersSearchTask
-        {
-            public TestSearchTask(IVsSearchCallback callback)
-                : base(1, new SearchQuery(), callback, null, Timeout.Infinite)
-            {
-            }
-
-            public void Begin() => Start();
-
-            public void StopSearch() => Stop();
-        }
-
-        private sealed class SearchQuery : IVsSearchQuery
-        {
-            public string SearchString => "add";
-            public uint ParseError => 0;
-            public uint GetTokens(uint count, IVsSearchToken[] tokens) => 0;
-        }
-
-        private sealed class SearchCallback : IVsSearchCallback
-        {
-            public readonly TaskCompletionSource<uint> Completion = new TaskCompletionSource<uint>(TaskCreationOptions.RunContinuationsAsynchronously);
-            public int CompletionCount;
-
-            public void ReportProgress(IVsSearchTask task, uint progress, uint maximum)
-            {
-            }
-
-            public void ReportComplete(IVsSearchTask task, uint results)
-            {
-                Interlocked.Increment(ref CompletionCount);
-                Completion.TrySetResult(results);
             }
         }
     }

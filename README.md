@@ -77,6 +77,20 @@ dotnet test tests\KnownMonikersExplorer.Tests\KnownMonikersExplorer.Tests.csproj
 
 The GitHub Actions build runs the tests before publishing, reports TRX results, summarizes line and branch coverage, and uploads test results and coverage reports.
 
+Unit tests exercise catalog metadata, query matching and normalization, cancellation while filtering, size validation, and image encoding to in-memory streams. They do not construct VS-hosted tool windows, mock shell services, or validate the Visual Studio image service. Encoded images are decoded to check dimensions, pixel data, and PNG transparency; unsupported extensions and stream failures are also covered.
+
+#### Visual Studio integration smoke checks
+
+Use F5 to run the extension in an experimental instance. These checks require a live Visual Studio host and are not substitutes for unit tests:
+
+1. Open the explorer and immediately enter a query. When loading finishes, verify the query is still applied and the loading message disappears.
+2. Rapidly replace a query, then clear it. Verify old results never replace the newest query or the restored full catalog.
+3. Invoke Find Moniker on a known toolbar image before opening the explorer. Verify it selects the image instead of reporting it as unknown. Repeat while a filter excludes that image, and verify the filter clears. Check a custom/unknown moniker separately.
+4. Export a known image at 16 and 32 pixels in light and dark modes. Verify dimensions and the appearance match the preview. Cancel the save dialog and verify the export dialog remains usable.
+5. Try an unsupported extension and an unwritable destination. Verify a visible error, a usable retry button, and no modification to an existing file with the unsupported extension. Click Export repeatedly during an export and verify only one operation is active.
+
+These host-dependent checks must be run explicitly; a passing unit-test run does not imply they passed.
+
 ## Related Resources
 
 - [Image Service and Catalog](https://msdn.microsoft.com/en-US/library/mt628927.aspx)

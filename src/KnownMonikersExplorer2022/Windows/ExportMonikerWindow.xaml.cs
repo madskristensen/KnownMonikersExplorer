@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -19,7 +18,6 @@ namespace KnownMonikersExplorer.Windows
 {
     public partial class ExportMonikerWindow : Window
     {
-        internal const int MaximumExportSize = 4096;
         private readonly KnownMonikersViewModel _model;
         private bool _isExporting;
 
@@ -27,7 +25,7 @@ namespace KnownMonikersExplorer.Windows
         {
             _model = model;
             InitializeComponent();
-            txtSizeHint.Text = $"Enter a width from 1 to {MaximumExportSize} pixels.";
+            txtSizeHint.Text = $"Enter a width from 1 to {ImageExport.MaximumSize} pixels.";
             Loaded += OnLoaded;
         }
 
@@ -92,13 +90,7 @@ namespace KnownMonikersExplorer.Windows
 
         private void TxtSize_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            btnOk.IsEnabled = !_isExporting && TryGetExportSize(txtSize.Text, out _);
-        }
-
-        internal static bool TryGetExportSize(string text, out int size)
-        {
-            return int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out size)
-                && size >= 1 && size <= MaximumExportSize;
+            btnOk.IsEnabled = !_isExporting && ImageExport.TryGetSize(txtSize.Text, out _);
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
@@ -108,7 +100,7 @@ namespace KnownMonikersExplorer.Windows
                 return;
             }
 
-            if (!TryGetExportSize(txtSize.Text, out var size))
+            if (!ImageExport.TryGetSize(txtSize.Text, out var size))
             {
                 txtError.Text = txtSizeHint.Text;
                 txtSize.Focus();
@@ -153,7 +145,7 @@ namespace KnownMonikersExplorer.Windows
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 _isExporting = false;
-                btnOk.IsEnabled = TryGetExportSize(txtSize.Text, out _);
+                btnOk.IsEnabled = ImageExport.TryGetSize(txtSize.Text, out _);
             }
         }
 
@@ -171,7 +163,7 @@ namespace KnownMonikersExplorer.Windows
 
             if (sfd.ShowDialog(this) == true)
             {
-                SaveBitmapToDisk(image, sfd.FileName);
+                ImageExport.Save(image, sfd.FileName, OpenImageFile);
                 await OptimizeImageAsync(sfd.FileName);
                 return true;
             }
@@ -179,9 +171,8 @@ namespace KnownMonikersExplorer.Windows
             return false;
         }
 
-        private static void SaveBitmapToDisk(BitmapSource image, string fileName)
+        private static Stream OpenImageFile(string fileName)
         {
-            BitmapEncoder encoder = GetEncoder(fileName);
             var fileParentPath = Path.GetDirectoryName(fileName);
 
             if (Directory.Exists(fileParentPath) == false)
@@ -189,11 +180,7 @@ namespace KnownMonikersExplorer.Windows
                 Directory.CreateDirectory(fileParentPath);
             }
 
-            using (var fileStream = new FileStream(fileName, FileMode.Create))
-            {
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fileStream);
-            }
+            return new FileStream(fileName, FileMode.Create);
         }
 
         private static async Task OptimizeImageAsync(string fileName)
@@ -207,24 +194,6 @@ namespace KnownMonikersExplorer.Windows
             catch (Exception ex)
             {
                 ex.Log();
-            }
-        }
-
-        internal static BitmapEncoder GetEncoder(string fileName)
-        {
-            var ext = Path.GetExtension(fileName).ToLowerInvariant();
-
-            switch (ext)
-            {
-                case ".jpg":
-                case ".jpeg":
-                    return new JpegBitmapEncoder();
-                case ".png":
-                    return new PngBitmapEncoder();
-                case ".gif":
-                    return new GifBitmapEncoder();
-                default:
-                    throw new NotSupportedException("Only PNG, JPEG, and GIF image files are supported.");
             }
         }
 

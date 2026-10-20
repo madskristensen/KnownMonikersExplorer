@@ -155,7 +155,7 @@ namespace KnownMonikersExplorer.ToolWindows
                     await Task.Delay(_debounceDelayMs, _cancellationToken);
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_cancellationToken);
 
-                    var searchString = SearchQuery.SearchString?.Trim().ToLowerInvariant() ?? string.Empty;
+                    var searchString = SearchQuery.SearchString;
                     KnownMonikersExplorerControl control;
                     IReadOnlyList<KnownMonikersViewModel> allMonikers;
 
@@ -167,7 +167,7 @@ namespace KnownMonikersExplorer.ToolWindows
                         await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_cancellationToken);
                         allMonikers = control.AllMonikers;
                         IReadOnlyList<KnownMonikersViewModel> resultsList = await Task.Run(
-                            () => BuildFilteredResults(allMonikers, searchString, _cancellationToken),
+                            () => MonikerSearch.Filter(allMonikers, searchString, _cancellationToken),
                             _cancellationToken);
 
                         await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_cancellationToken);
@@ -199,29 +199,6 @@ namespace KnownMonikersExplorer.ToolWindows
 
                     base.OnStartSearch();
                 }
-            }
-
-            internal static IReadOnlyList<KnownMonikersViewModel> BuildFilteredResults(IReadOnlyList<KnownMonikersViewModel> allMonikers, string searchString, CancellationToken cancellationToken)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (string.IsNullOrEmpty(searchString))
-                {
-                    return allMonikers;
-                }
-
-                var filtered = new List<KnownMonikersViewModel>();
-                for (var i = 0; i < allMonikers.Count; i++)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    KnownMonikersViewModel moniker = allMonikers[i];
-                    if (moniker.MatchSearchTerm(searchString))
-                    {
-                        filtered.Add(moniker);
-                    }
-                }
-
-                return filtered;
             }
 
             protected override void OnStopSearch()

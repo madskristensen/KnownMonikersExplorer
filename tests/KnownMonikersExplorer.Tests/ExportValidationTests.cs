@@ -14,10 +14,11 @@ namespace KnownMonikersExplorer.Tests
         [DataRow("1", 1)]
         [DataRow("16", 16)]
         [DataRow("32", 32)]
+        [DataRow("4095", 4095)]
         [DataRow("4096", 4096)]
         public void ValidSizesAreParsedWithoutChangingTheirValue(string text, int expected)
         {
-            Assert.IsTrue(ExportMonikerWindow.TryGetExportSize(text, out var size));
+            Assert.IsTrue(ImageExport.TryGetSize(text, out var size));
             Assert.AreEqual(expected, size);
         }
 
@@ -33,9 +34,11 @@ namespace KnownMonikersExplorer.Tests
         [DataRow("16.5")]
         [DataRow("+16")]
         [DataRow(" 16 ")]
+        [DataRow(" \t ")]
+        [DataRow("1,024")]
         public void InvalidTypedOrPastedSizesAreRejected(string text)
         {
-            Assert.IsFalse(ExportMonikerWindow.TryGetExportSize(text, out _));
+            Assert.IsFalse(ImageExport.TryGetSize(text, out _));
         }
 
         [STATestMethod]
@@ -46,7 +49,7 @@ namespace KnownMonikersExplorer.Tests
         [DataRow("image.gif", typeof(GifBitmapEncoder), "47494638")]
         public void SupportedExtensionsProduceMatchingFileFormats(string fileName, Type encoderType, string signature)
         {
-            BitmapEncoder encoder = ExportMonikerWindow.GetEncoder(fileName);
+            BitmapEncoder encoder = ImageExport.CreateEncoder(fileName);
             Assert.AreEqual(encoderType, encoder.GetType());
 
             BitmapSource bitmap = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgra32, null, new byte[] { 0, 0, 255, 255 }, 4);
@@ -66,7 +69,7 @@ namespace KnownMonikersExplorer.Tests
         [DataRow("image")]
         public void UnsupportedExtensionsAreRejectedRatherThanEncodedAsGif(string fileName)
         {
-            Assert.Throws<NotSupportedException>(() => ExportMonikerWindow.GetEncoder(fileName));
+            Assert.Throws<NotSupportedException>(() => ImageExport.CreateEncoder(fileName));
         }
     }
 }
