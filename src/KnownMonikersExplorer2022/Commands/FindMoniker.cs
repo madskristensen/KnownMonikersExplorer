@@ -123,6 +123,25 @@ namespace KnownMonikersExplorer
             ToolWindowPane toolWindow = await KnownMonikersExplorerWindow.ShowAsync();
             var explorer = toolWindow.Content as KnownMonikersExplorerControl;
 
+            try
+            {
+                await explorer.InitializationCompleted;
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                ex.Log();
+                await VS.MessageBox.ShowAsync(
+                    "Unable to load image monikers. See the Output window for details.",
+                    icon: OLEMSGICON.OLEMSGICON_CRITICAL,
+                    buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK);
+                return;
+            }
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (!explorer.SelectMoniker(moniker, out var needsClearSearch))
             {
                 var window = new UnknownMonikerWindow(moniker)

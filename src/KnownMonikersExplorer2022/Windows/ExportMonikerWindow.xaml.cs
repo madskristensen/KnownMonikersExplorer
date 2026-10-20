@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,12 +19,15 @@ namespace KnownMonikersExplorer.Windows
 {
     public partial class ExportMonikerWindow : Window
     {
+        internal const int MaximumExportSize = 4096;
         private readonly KnownMonikersViewModel _model;
+        private bool _isExporting;
 
         public ExportMonikerWindow(KnownMonikersViewModel model)
         {
             _model = model;
             InitializeComponent();
+            txtSizeHint.Text = $"Enter a width from 1 to {MaximumExportSize} pixels.";
             Loaded += OnLoaded;
         }
 
@@ -88,13 +92,25 @@ namespace KnownMonikersExplorer.Windows
 
         private void TxtSize_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            btnOk.IsEnabled = int.TryParse(txtSize.Text, out var size) && size > 0;
+            btnOk.IsEnabled = !_isExporting && TryGetExportSize(txtSize.Text, out _);
+        }
+
+        internal static bool TryGetExportSize(string text, out int size)
+        {
+            return int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out size)
+                && size >= 1 && size <= MaximumExportSize;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (!int.TryParse(txtSize.Text, out var size))
+            if (_isExporting)
             {
+                return;
+            }
+
+            if (!TryGetExportSize(txtSize.Text, out var size))
+            {
+                txtError.Text = txtSizeHint.Text;
                 txtSize.Focus();
                 txtSize.SelectAll();
                 return;
@@ -105,6 +121,10 @@ namespace KnownMonikersExplorer.Windows
 
         private async Task ExportAsync(int size)
         {
+            _isExporting = true;
+            btnOk.IsEnabled = false;
+            txtError.Text = string.Empty;
+
             try
             {
                 // Get the selected theme's background color for proper image theming
@@ -117,9 +137,23 @@ namespace KnownMonikersExplorer.Windows
                     Close();
                 }
             }
+            catch (NotSupportedException ex)
+            {
+                ex.Log();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                txtError.Text = "Unable to export the image. Choose a .png, .jpg, .jpeg, or .gif file. See the Output window for details.";
+            }
             catch (Exception ex)
             {
                 ex.Log();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                txtError.Text = "Unable to export the image. Check the destination and try again. See the Output window for details.";
+            }
+            finally
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _isExporting = false;
+                btnOk.IsEnabled = TryGetExportSize(txtSize.Text, out _);
             }
         }
 
@@ -135,7 +169,7 @@ namespace KnownMonikersExplorer.Windows
                 Title = Title,
             };
 
-            if (sfd.ShowDialog() == true)
+            if (sfd.ShowDialog(this) == true)
             {
                 SaveBitmapToDisk(image, sfd.FileName);
                 await OptimizeImageAsync(sfd.FileName);
@@ -147,6 +181,7 @@ namespace KnownMonikersExplorer.Windows
 
         private static void SaveBitmapToDisk(BitmapSource image, string fileName)
         {
+            BitmapEncoder encoder = GetEncoder(fileName);
             var fileParentPath = Path.GetDirectoryName(fileName);
 
             if (Directory.Exists(fileParentPath) == false)
@@ -156,7 +191,6 @@ namespace KnownMonikersExplorer.Windows
 
             using (var fileStream = new FileStream(fileName, FileMode.Create))
             {
-                BitmapEncoder encoder = GetEncoder(fileName);
                 encoder.Frames.Add(BitmapFrame.Create(image));
                 encoder.Save(fileStream);
             }
@@ -176,7 +210,7 @@ namespace KnownMonikersExplorer.Windows
             }
         }
 
-        private static BitmapEncoder GetEncoder(string fileName)
+        internal static BitmapEncoder GetEncoder(string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLowerInvariant();
 
@@ -187,9 +221,11 @@ namespace KnownMonikersExplorer.Windows
                     return new JpegBitmapEncoder();
                 case ".png":
                     return new PngBitmapEncoder();
+                case ".gif":
+                    return new GifBitmapEncoder();
+                default:
+                    throw new NotSupportedException("Only PNG, JPEG, and GIF image files are supported.");
             }
-
-            return new GifBitmapEncoder();
         }
 
         public class ViewModel

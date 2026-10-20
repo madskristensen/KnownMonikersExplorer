@@ -15,7 +15,22 @@
              Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}"
              d:DesignHeight="450" d:DesignWidth="400" UseLayoutRounding="True">
     <Grid Background="{DynamicResource {x:Static shell:VsBrushes.WindowKey}}">
-        <ListView Name="list" Margin="5" ItemsSource="{Binding Monikers}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding StatusMessage}" Margin="5" TextWrapping="Wrap">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding StatusMessage}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <ListView Name="list" Grid.Row="1" Margin="5" ItemsSource="{Binding Monikers}"
                   SelectionMode="Single"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.CanContentScroll="True"

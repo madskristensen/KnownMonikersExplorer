@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -27,9 +28,9 @@ namespace KnownMonikersExplorer.ToolWindows
         {
             var state = new ServicesDTO();
 
-            // Kick off background population without blocking UI thread
-            _ = Task.Run(async () =>
+            Package.JoinableTaskFactory.RunAsync(async () =>
             {
+                await TaskScheduler.Default;
                 try
                 {
                     await state.PopulateAsync(cancellationToken);
@@ -37,17 +38,16 @@ namespace KnownMonikersExplorer.ToolWindows
                 catch (OperationCanceledException)
                 {
                 }
-            }, cancellationToken);
+            }).FireAndForget();
 
             await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
-            return new KnownMonikersExplorerControl(state);
+            return new KnownMonikersExplorerControl(state, Package.JoinableTaskFactory);
         }
 
         [Guid("cfff3162-9c8d-4244-b0a7-e3b39a968b24")]
         public class Pane : ToolWindowPane
         {
-            private CancellationTokenSource _debounceCts;
-            private readonly object _debounceLock = new object();
+            private KnownMonikersSearchTask _searchTask;
 
             public Pane()
             {
@@ -65,17 +65,10 @@ namespace KnownMonikersExplorer.ToolWindows
 
                 ThreadHelper.ThrowIfNotOnUIThread();
 
-                // Cancel any pending debounced search
-                CancellationToken ct;
-                lock (_debounceLock)
-                {
-                    _debounceCts?.Cancel();
-                    _debounceCts = new CancellationTokenSource();
-                    ct = _debounceCts.Token;
-                }
-
+                _searchTask?.Cancel();
                 int debounceDelayMs = GetDebounceDelayMs(pSearchQuery.SearchString);
-                return new KnownMonikersSearchTask(dwCookie, pSearchQuery, pSearchCallback, this, ct, debounceDelayMs);
+                _searchTask = new KnownMonikersSearchTask(dwCookie, pSearchQuery, pSearchCallback, this, debounceDelayMs);
+                return _searchTask;
             }
 
             private static int GetDebounceDelayMs(string searchString)
@@ -96,15 +89,24 @@ namespace KnownMonikersExplorer.ToolWindows
 
             public override void ClearSearch()
             {
-                lock (_debounceLock)
-                {
-                    _debounceCts?.Cancel();
-                }
+                ThreadHelper.ThrowIfNotOnUIThread();
+                _searchTask?.Cancel();
+                _searchTask = null;
 
                 if (Content is KnownMonikersExplorerControl control)
                 {
                     control.ClearFilter();
                 }
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    _searchTask?.Cancel();
+                }
+
+                base.Dispose(disposing);
             }
 
             public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings)
@@ -118,41 +120,40 @@ namespace KnownMonikersExplorer.ToolWindows
         internal class KnownMonikersSearchTask : VsSearchTask
         {
             private readonly Pane _toolWindow;
-            private readonly CancellationToken _debounceCt;
+            private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+            private readonly CancellationToken _cancellationToken;
+            private readonly object _cancellationLock = new object();
             private readonly int _debounceDelayMs;
+            private bool _started;
+            private bool _completed;
 
-            public KnownMonikersSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, Pane toolWindow, CancellationToken debounceCt, int debounceDelayMs)
+            public KnownMonikersSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, Pane toolWindow, int debounceDelayMs)
                 : base(dwCookie, pSearchQuery, pSearchCallback)
             {
                 _toolWindow = toolWindow;
-                _debounceCt = debounceCt;
+                _cancellationToken = _cancellation.Token;
                 _debounceDelayMs = debounceDelayMs;
             }
 
             protected override void OnStartSearch()
             {
-                // Fire-and-forget the debounced search
-                _ = PerformDebouncedSearchAsync();
+                lock (_cancellationLock)
+                {
+                    _started = true;
+                }
+
+                PerformDebouncedSearchAsync().FireAndForget();
             }
 
             private async Task PerformDebouncedSearchAsync()
             {
-                try
-                {
-                    // Wait for debounce period; if cancelled, another keystroke arrived
-                    await Task.Delay(_debounceDelayMs, _debounceCt);
-                }
-                catch (OperationCanceledException)
-                {
-                    return; // Newer search superseded this one
-                }
-
                 ErrorCode = VSConstants.S_OK;
                 uint resultCount = 0;
 
                 try
                 {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_debounceCt);
+                    await Task.Delay(_debounceDelayMs, _cancellationToken);
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_cancellationToken);
 
                     var searchString = SearchQuery.SearchString?.Trim().ToLowerInvariant() ?? string.Empty;
                     KnownMonikersExplorerControl control;
@@ -162,20 +163,25 @@ namespace KnownMonikersExplorer.ToolWindows
 
                     if (control != null)
                     {
+                        await control.InitializationCompleted.WithCancellation(_cancellationToken);
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_cancellationToken);
                         allMonikers = control.AllMonikers;
                         IReadOnlyList<KnownMonikersViewModel> resultsList = await Task.Run(
-                            () => BuildFilteredResults(allMonikers, searchString, _debounceCt),
-                            _debounceCt);
+                            () => BuildFilteredResults(allMonikers, searchString, _cancellationToken),
+                            _cancellationToken);
 
-                        resultCount = (uint)resultsList.Count;
-
-                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_debounceCt);
-                        control.ApplyFilter(resultsList);
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_cancellationToken);
+                        lock (_cancellationLock)
+                        {
+                            _cancellationToken.ThrowIfCancellationRequested();
+                            control.ApplyFilter(resultsList);
+                            resultCount = (uint)resultsList.Count;
+                        }
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    return;
+                    resultCount = 0;
                 }
                 catch (Exception ex)
                 {
@@ -184,15 +190,20 @@ namespace KnownMonikersExplorer.ToolWindows
                 }
                 finally
                 {
-                    SearchResults = resultCount;
-                    // The base `OnStartSearch` method actually completes the search,
-                    // so we call it here instead of in our override of `OnStartSearch`.
+                    lock (_cancellationLock)
+                    {
+                        SearchResults = _cancellationToken.IsCancellationRequested ? 0 : resultCount;
+                        _completed = true;
+                        _cancellation.Dispose();
+                    }
+
                     base.OnStartSearch();
                 }
             }
 
-            private static IReadOnlyList<KnownMonikersViewModel> BuildFilteredResults(IReadOnlyList<KnownMonikersViewModel> allMonikers, string searchString, CancellationToken cancellationToken)
+            internal static IReadOnlyList<KnownMonikersViewModel> BuildFilteredResults(IReadOnlyList<KnownMonikersViewModel> allMonikers, string searchString, CancellationToken cancellationToken)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrEmpty(searchString))
                 {
                     return allMonikers;
@@ -215,7 +226,24 @@ namespace KnownMonikersExplorer.ToolWindows
 
             protected override void OnStopSearch()
             {
+                Cancel();
                 SearchResults = 0;
+            }
+
+            internal void Cancel()
+            {
+                lock (_cancellationLock)
+                {
+                    if (!_completed)
+                    {
+                        _cancellation.Cancel();
+                        if (!_started)
+                        {
+                            _completed = true;
+                            _cancellation.Dispose();
+                        }
+                    }
+                }
             }
         }
     }
@@ -228,6 +256,13 @@ namespace KnownMonikersExplorer.ToolWindows
         private readonly TaskCompletionSource<bool> _populationCompleted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public Task PopulationCompleted => _populationCompleted.Task;
+
+        public async Task<IReadOnlyList<KnownMonikersViewModel>> GetMonikersAsync(CancellationToken cancellationToken = default)
+        {
+            await PopulationCompleted.WithCancellation(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            return Monikers;
+        }
 
         public IReadOnlyList<KnownMonikersViewModel> Monikers
         {
@@ -247,6 +282,7 @@ namespace KnownMonikersExplorer.ToolWindows
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 PropertyInfo[] properties = typeof(KnownMonikers).GetProperties(BindingFlags.Static | BindingFlags.Public);
                 var list = new List<KnownMonikersViewModel>(properties.Length);
 

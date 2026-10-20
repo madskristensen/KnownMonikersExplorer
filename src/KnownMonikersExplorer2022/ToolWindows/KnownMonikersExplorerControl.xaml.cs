@@ -7,9 +7,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Community.VisualStudio.Toolkit;
 using KnownMonikersExplorer.Windows;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 
 namespace KnownMonikersExplorer.ToolWindows
 {
@@ -20,16 +22,22 @@ namespace KnownMonikersExplorer.ToolWindows
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public KnownMonikersExplorerControl(ServicesDTO state)
+        public KnownMonikersExplorerControl(ServicesDTO state, JoinableTaskFactory taskFactory)
         {
             Loaded += OnLoaded;
             _state = state;
             _filtered = Array.Empty<KnownMonikersViewModel>();
             DataContext = this;
             InitializeComponent();
+            InitializationCompleted = taskFactory.RunAsync(InitializeAsync).Task;
+            InitializationCompleted.FireAndForget();
         }
 
         public IEnumerable<KnownMonikersViewModel> Monikers => _filtered;
+
+        public Task InitializationCompleted { get; }
+
+        public string StatusMessage { get; private set; } = "Loading image monikers...";
 
         /// <summary>
         /// Gets all monikers for search filtering.
@@ -41,16 +49,33 @@ namespace KnownMonikersExplorer.ToolWindows
             Loaded -= OnLoaded;
             list.KeyUp += List_KeyUp;
             list.MouseDoubleClick += Export_Click;
-            // Initial population once background load done
-            _ = Task.Run(WaitAndBindInitialAsync);
         }
 
-        private async Task WaitAndBindInitialAsync()
+        private async Task InitializeAsync()
         {
-            await _state.PopulationCompleted;
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            ApplyFilter(_state.Monikers); // show all
+            try
+            {
+                IReadOnlyList<KnownMonikersViewModel> monikers = await _state.GetMonikersAsync();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                ApplyFilter(monikers);
+                StatusMessage = null;
+            }
+            catch (OperationCanceledException)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                StatusMessage = "Loading image monikers was canceled.";
+                throw;
+            }
+            catch (Exception)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                StatusMessage = "Unable to load image monikers. See the Output window for details.";
+                throw;
+            }
+            finally
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
+            }
         }
 
         /// <summary>
@@ -58,6 +83,7 @@ namespace KnownMonikersExplorer.ToolWindows
         /// </summary>
         public void ApplyFilter(IReadOnlyList<KnownMonikersViewModel> items)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _filtered = items;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Monikers)));
         }
@@ -67,6 +93,7 @@ namespace KnownMonikersExplorer.ToolWindows
         /// </summary>
         public void ClearFilter()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ApplyFilter(_state.Monikers);
         }
 
@@ -137,6 +164,7 @@ namespace KnownMonikersExplorer.ToolWindows
         /// <returns>True if the moniker was found and selected, false otherwise.</returns>
         internal bool SelectMoniker(ImageMoniker moniker, out bool needsClearSearch)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             needsClearSearch = false;
 
             // First try to find in the current filtered view

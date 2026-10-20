@@ -19,6 +19,8 @@ Download this extension from the [Visual Studio Marketplace][marketplace] or get
 
 Open the tool window from **View → Other Windows → KnownMonikers Explorer** and filter image monikers by typing in the search box.
 
+The window displays a loading message while the catalog initializes. Search and Find Moniker wait for initialization, and clearing or replacing a search cancels the previous request.
+
 ![Tool window](art/toolwindow.png)
 
 ### Context Menu Actions
@@ -35,6 +37,8 @@ Right-click any moniker for a list of actions:
 ### Export Dialog
 
 Export the image moniker to file in the size you specify. PNG, JPEG and GIF formats are supported.
+
+Image widths from 1 to 4096 pixels are supported. Invalid sizes disable export, unsupported file extensions are rejected, and export failures are shown in the dialog with diagnostic details logged to the Output window.
 
 ![Export Dialog](art/export-dialog.png)
 
@@ -62,6 +66,16 @@ msbuild KnownMonikersExplorer.slnx /restore /p:Configuration=Release /p:DeployEx
 The VSIX is written to `src\KnownMonikersExplorer2022\bin\Release\KnownMonikersExplorer2022.vsix`. Use **Debug / Any CPU** and press **F5** to deploy and debug in the experimental instance.
 
 Assembly metadata remains in `Properties\AssemblyInfo.cs` so it continues to use the manifest-generated `Vsix` constants and CI version stamping.
+
+### Tests
+
+The solution includes .NET Framework 4.8 MSTest regression tests. Run them from Visual Studio Test Explorer or, after building, use:
+
+```powershell
+dotnet test tests\KnownMonikersExplorer.Tests\KnownMonikersExplorer.Tests.csproj --configuration Release --no-build --no-restore --settings tests\KnownMonikersExplorer.Tests\CodeCoverage.runsettings --collect "Code Coverage;Format=Cobertura"
+```
+
+The GitHub Actions build runs the tests before publishing, reports TRX results, summarizes line and branch coverage, and uploads test results and coverage reports.
 
 ## Related Resources
 

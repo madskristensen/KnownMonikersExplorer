@@ -13,6 +13,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      checks: write
     outputs:
       version: ${{ steps.vsix_version.outputs.version-number }}
     name: Build
@@ -21,6 +24,8 @@ jobs:
       Configuration: Release
       DeployExtension: False
       Solution: KnownMonikersExplorer.slnx
+      TestProject: tests\KnownMonikersExplorer.Tests\KnownMonikersExplorer.Tests.csproj
+      TestResultsDirectory: ${{ github.workspace }}\TestResults
       VsixManifestPath: src\KnownMonikersExplorer2022\source.extension.vsixmanifest
       VsixManifestSourcePath: src\KnownMonikersExplorer2022\source.extension.cs
 
@@ -29,6 +34,11 @@ jobs:
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: 9.0.x
 
     - name: Cache NuGet packages
       uses: actions/cache@v5
@@ -50,6 +60,54 @@ jobs:
 
     - name: Build
       run: msbuild ${{ env.Solution }} /v:m /m /p:Configuration=${{ env.Configuration }} /p:DeployExtension=${{ env.DeployExtension }}
+
+    - name: Run tests
+      run: >
+        dotnet test ${{ env.TestProject }}
+        --configuration ${{ env.Configuration }}
+        --no-build
+        --no-restore
+        --verbosity normal
+        --settings tests\KnownMonikersExplorer.Tests\CodeCoverage.runsettings
+        --results-directory "${{ env.TestResultsDirectory }}"
+        --logger "trx;LogFileName=test-results.trx"
+        --collect "Code Coverage;Format=Cobertura"
+
+    - name: Report test results
+      uses: dorny/test-reporter@v3
+      if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+      with:
+        name: Test Results
+        path: TestResults/**/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+    - name: Add coverage summary
+      if: ${{ !cancelled() }}
+      shell: pwsh
+      run: |
+        $coverageFile = Get-ChildItem "${{ env.TestResultsDirectory }}" -Filter "*.cobertura.xml" -Recurse |
+          Select-Object -First 1
+        if (-not $coverageFile) {
+          throw "Cobertura coverage report was not produced."
+        }
+
+        [xml]$coverage = Get-Content $coverageFile.FullName
+        $lineCoverage = [double]$coverage.coverage.'line-rate'
+        $branchCoverage = [double]$coverage.coverage.'branch-rate'
+        "Code coverage: **$($lineCoverage.ToString('P2'))**" >> $env:GITHUB_STEP_SUMMARY
+        "Branch coverage: **$($branchCoverage.ToString('P2'))**" >> $env:GITHUB_STEP_SUMMARY
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v7
+      if: ${{ !cancelled() }}
+      with:
+        name: test-results
+        path: |
+          TestResults/**/*.trx
+          TestResults/**/*.cobertura.xml
+        if-no-files-found: error
+        retention-days: 14
 
     - name: Upload artifact
       uses: actions/upload-artifact@v7

@@ -22,7 +22,9 @@
           theming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource Self}, Converter={StaticResource BrushToColorConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -44,11 +46,15 @@
             <CheckBox x:Name="chkDarkTheme" Grid.Column="4" Content="Dark theme" VerticalAlignment="Center" Checked="ChkDarkTheme_Changed" Unchecked="ChkDarkTheme_Changed"/>
         </Grid>
 
-        <Border x:Name="imgBorder" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <TextBlock x:Name="txtSizeHint" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0" />
+
+        <Border x:Name="imgBorder" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="20" HorizontalAlignment="Left" VerticalAlignment="Top">
             <imaging:CrispImage x:Name="imgMoniker" Width="250" Height="250" Moniker="{x:Static catalog:KnownMonikers.MoveUp}" />
         </Border>
 
-        <Grid Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0 10 0 0">
+        <TextBlock x:Name="txtError" Grid.Row="3" Grid.ColumnSpan="2" MaxWidth="320" TextWrapping="Wrap" />
+
+        <Grid Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0 10 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto" />

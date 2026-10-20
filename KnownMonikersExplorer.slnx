@@ -7,4 +7,5 @@
     <Platform Solution="*|x86" Project="x86" />
     <Deploy Solution="Debug|Any CPU" />
   </Project>
+  <Project Path="tests/KnownMonikersExplorer.Tests/KnownMonikersExplorer.Tests.csproj" />
 </Solution>
