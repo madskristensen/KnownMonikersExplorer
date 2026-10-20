@@ -10,8 +10,7 @@ before_build:
   - ps: Vsix-TokenReplacement src\KnownMonikersExplorer2022\source.extension.cs 'Version = "([0-9\\.]+)"' 'Version = "{version}"'
 
 build_script:
-  - nuget restore -Verbosity quiet
-  - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+  - msbuild src\KnownMonikersExplorer2022\KnownMonikersExplorer2022.csproj /restore /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery

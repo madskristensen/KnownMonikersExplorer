@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="src/KnownMonikersExplorer2022/KnownMonikersExplorer2022.csproj">
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy Solution="Debug|Any CPU" />
+  </Project>
+</Solution>

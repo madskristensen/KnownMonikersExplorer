@@ -49,6 +49,20 @@ Hover the mouse over an image moniker in Visual Studio (for example, an image on
 - Visual Studio 2022
 - Visual Studio 2026
 
+## Building from source
+
+Open `KnownMonikersExplorer.slnx` in Visual Studio with the **Visual Studio extension development** workload and the .NET Framework 4.8 targeting pack installed. The extension uses an SDK-style VSIX project.
+
+Build with Visual Studio MSBuild:
+
+```powershell
+msbuild KnownMonikersExplorer.slnx /restore /p:Configuration=Release /p:DeployExtension=false
+```
+
+The VSIX is written to `src\KnownMonikersExplorer2022\bin\Release\KnownMonikersExplorer2022.vsix`. Use **Debug / Any CPU** and press **F5** to deploy and debug in the experimental instance.
+
+Assembly metadata remains in `Properties\AssemblyInfo.cs` so it continues to use the manifest-generated `Vsix` constants and CI version stamping.
+
 ## Related Resources
 
 - [Image Service and Catalog](https://msdn.microsoft.com/en-US/library/mt628927.aspx)

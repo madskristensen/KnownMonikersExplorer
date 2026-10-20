@@ -20,7 +20,7 @@ jobs:
     env:
       Configuration: Release
       DeployExtension: False
-      Solution: KnownMonikersExplorer.sln
+      Solution: KnownMonikersExplorer.slnx
       VsixManifestPath: src\KnownMonikersExplorer2022\source.extension.vsixmanifest
       VsixManifestSourcePath: src\KnownMonikersExplorer2022\source.extension.cs
 
